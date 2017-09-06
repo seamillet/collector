@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">collector</string>
+
+    <string name="action_new">新建</string>
+    <string name="action_edit">编辑</string>
+    <string name="action_shear">剪切</string>
+    <string name="action_back">返回</string>
+    <string name="action_save">保存</string>
+    <string name="action_gps">我的位置</string>
+    <string name="action_revoke">切割线点撤销</string>
+    <string name="action_undo">地块撤销</string>
+    <string name="action_delpt">删除折点</string>
+    <string name="action_clear">删除要素</string>
+    <string name="shear_activity_title">面要素分割</string>
+
+
+    <string name="action_area">面积（亩）：</string>
+    <string name="action_shear1area">最后面积（亩）：</string>
+    <string name="action_shear2area">倒数第二面积（亩）：</string>
+    <string name="action_perimeter">周长（米）：</string>
+    <string name="action_lastside">最后边长（米）：</string>
+    <string name="action_lastlside">倒数第二边长（米）：</string>
+    <string name="action_position">位置：</string>
+    <string name="action_angle">角度（°）：</string>
+    <string name="action_defaultvalue">单位：（亩）</string>
+    <string name="action_invalid">无效</string>
+    <!-- Colors -->
+    <color name="cl_bar_bg">#22A5FF</color>
+    <color name="cl_bar_fg">#355AFF</color>
+
+    <string name="title_activity_test">TestActivity</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_shear">ShearActivity</string>
+</resources>

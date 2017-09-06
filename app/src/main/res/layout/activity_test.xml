@@ -1,0 +1,98 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".TestActivity" >
+
+    <LinearLayout
+        android:id="@+id/top"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:background="@color/cl_bar_bg" >
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="要素采集"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
+
+    <srs.tools.MapControl
+        android:id="@+id/map_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/bottom"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/top" />
+
+    <LinearLayout
+        android:id="@+id/bottom"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:background="@color/cl_bar_bg" >
+
+        <LinearLayout
+            android:id="@+id/action_new"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:descendantFocusability="blocksDescendants" >
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:contentDescription="@string/action_new"
+                android:scaleType="fitCenter"
+                android:src="@mipmap/ic_action_new" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/action_edit"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:descendantFocusability="blocksDescendants" >
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:contentDescription="@string/action_edit"
+                android:scaleType="fitCenter"
+                android:src="@mipmap/ic_action_edit" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/action_shear"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:descendantFocusability="blocksDescendants" >
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:contentDescription="@string/action_shear"
+                android:scaleType="fitCenter"
+                android:src="@mipmap/ic_action_edit" />
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>
