@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.LinearLayout;
@@ -131,6 +132,14 @@ public class TestActivity extends Activity {
                 startActivity(intent);
             }
         });
+
+        try {
+            mapControl.setMap(LoadMapTest());
+            mapControl.Refresh();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     private AlertDialog generateDialog(final CharSequence title) {
@@ -196,14 +205,16 @@ public class TestActivity extends Activity {
      * @throws Exception
      */
     public Map LoadMapTest() throws Exception {
-        Map map = new Map(new Envelope(0, 0, mapControl.getWidth(),
-                mapControl.getHeight()));
+//        Map map = new Map(new Envelope(0, 0, mapControl.getWidth(),
+//                mapControl.getHeight()));
+        Map map = new Map(new Envelope(0, 0, 100D, 100D));
         String tifPath = "";
         String shpPath = "";
         // 根据文件，读取影像数据 xian.tif
         tifPath = Environment.getExternalStorageDirectory().getAbsolutePath()
                 + "/FlightTarget/廊坊.tif";
-        // /TestData/IMAGE/长葛10村.tif /test/辉县市/IMAGE/01.tif
+        Log.d("Main_Activity", tifPath);
+        // /TestData/IMAGE/长葛10村.tif /test/辉县市/IMAGE/01.tif  /storage/emulated/0/FlightTarget/廊坊.tif
         File tifFile = new File(tifPath);
         if (tifFile.exists()) {
             IRasterLayer layer = new RasterLayer(tifPath);
@@ -215,6 +226,7 @@ public class TestActivity extends Activity {
         // 根据文件，加载shp矢量图层
         shpPath = Environment.getExternalStorageDirectory().getAbsolutePath()
                 + "/FlightTarget/目标.shp";
+        Log.d("Main_Activity", shpPath);
         // /TestData/Data/调查村.shp /test/辉县市/TASK/村边界.shp
         File shpFile = new File(shpPath);
         if (shpFile.exists()) {
@@ -223,7 +235,7 @@ public class TestActivity extends Activity {
                 map.AddLayer(layer);
             }
         }
-        map.setExtent(((IFeatureLayer)map.GetLayer(1)).getFeatureClass().getGeometry(1).Extent());
+        map.setExtent(((IFeatureLayer)map.GetLayer(0)).getFeatureClass().getGeometry(1).Extent());
         map.PartialRefresh();
         map.setGeoProjectType(ProjCSType.ProjCS_WGS1984_Albers_BJ);
         return map;
