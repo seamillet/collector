@@ -89,7 +89,7 @@
         </LinearLayout>
     </RelativeLayout>
 
-    <srs.tools.MapControl
+    <com.willc.collector.lib.view.MapView
         android:id="@+id/map_collect"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

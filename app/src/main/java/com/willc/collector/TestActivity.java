@@ -20,6 +20,9 @@ import com.willc.collector.interoperation.event.OnEditBackListener;
 import com.willc.collector.interoperation.event.OnEditSaveListener;
 import com.willc.collector.interoperation.event.OnShearBackListener;
 import com.willc.collector.interoperation.event.OnShearSaveListener;
+import com.willc.collector.lib.map.IMap;
+import com.willc.collector.lib.map.Map;
+import com.willc.collector.lib.view.MapView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -34,37 +37,31 @@ import srs.Layer.FeatureLayer;
 import srs.Layer.IFeatureLayer;
 import srs.Layer.IRasterLayer;
 import srs.Layer.RasterLayer;
-import srs.Map.IMap;
-import srs.Map.Map;
-import srs.tools.MapControl;
 
 public class TestActivity extends Activity {
+    private static final String TAG = TestActivity.class.getSimpleName();
+
     private final CharSequence[] items = {"Point", "Line", "Polygon"};
     private List<IGeometry> mGeometrys = null;
+
+    private IMap map = null;
 
     private LinearLayout actionNew = null;
     private LinearLayout actionEdit = null;
     private LinearLayout actionShear = null;
-    private MapControl mapControl = null;
+    private MapView mapView = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_test);
+        setContentView(R.layout.activity_test);  //inflate views
 
         mGeometrys = new ArrayList<IGeometry>();
-        mapControl = (MapControl) findViewById(R.id.map_main);
+        mapView = (MapView) findViewById(R.id.map_view);
         actionNew = (LinearLayout) findViewById(R.id.action_new);
         actionEdit = (LinearLayout) findViewById(R.id.action_edit);
         actionShear = (LinearLayout)findViewById(R.id.action_shear);
-
-        try {
-            LoadMapTest();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
 
         // 新建单击
         actionNew.setOnClickListener(new View.OnClickListener() {
@@ -79,7 +76,7 @@ public class TestActivity extends Activity {
             @Override
             public void onClick(View v) {
                 try {
-                    CollectInteroperator.init(LoadMapTest(), ((IFeatureLayer) LoadMapTest().GetLayer(1))
+                    CollectInteroperator.init(loadMap(), ((IFeatureLayer) loadMap().GetLayer(1))
                             .getFeatureClass().getGeometry(1));
                     CollectInteroperator.CollectEventManager
                             .setOnEditBackListener(new OnEditBackListener() {
@@ -111,7 +108,7 @@ public class TestActivity extends Activity {
             @Override
             public void onClick(View v) {
                 try {
-                    IMap map = LoadMapTest();
+                    IMap map = loadMap();
                     mGeometrys.add(((IFeatureLayer) map.GetLayer(1))
                             .getFeatureClass().getGeometry(1));
                     CollectInteroperator.init(map, mGeometrys);
@@ -142,12 +139,11 @@ public class TestActivity extends Activity {
         });
 
         try {
-            mapControl.setMap(LoadMapTest());
-            mapControl.Refresh();
+            mapView.setMap(loadMap());
+            //mapView.refresh();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     private AlertDialog generateDialog(final CharSequence title) {
@@ -174,8 +170,8 @@ public class TestActivity extends Activity {
                 }
                 if (title.equals("新建")) {
                     try {
-//                        CollectInteroperator.init(LoadMapTest(), type,"几何计算");
-                        CollectInteroperator.init(LoadMapTest(), type);
+                        //CollectInteroperator.init(LoadMapTest(), type,"几何计算");
+                        CollectInteroperator.init(loadMap(), type);
                         CollectInteroperator.CollectEventManager
                                 .setOnCollectBackListener(new OnCollectBackListener() {
                                     @Override
@@ -200,9 +196,7 @@ public class TestActivity extends Activity {
                             CollectActivity.class);
                     intent.putExtra("obtainArea",true);
                     startActivity(intent);
-                } /*else if (title.equals("编辑")) {
-
-                }*/
+                }
             }
         });
         return builder.create();
@@ -213,39 +207,37 @@ public class TestActivity extends Activity {
      *
      * @throws Exception
      */
-    public Map LoadMapTest() throws Exception {
-        Map map = new Map(new Envelope(0, 0, 100D, 100D));
-        String tifPath = "";
-        String shpPath = "";
-        // 根据文件，读取影像数据 xian.tif
-        tifPath = Environment.getExternalStorageDirectory().getAbsolutePath()+ "/Download/collector/长葛10村.tif";
-        Log.d("Main_Activity", tifPath);
-        // /TestData/IMAGE/长葛10村.tif /test/辉县市/IMAGE/01.tif  /storage/emulated/0/FlightTarget/廊坊.tif
+    public IMap loadMap() throws Exception {
+        if (this.map == null) {
+            this.map = new Map(new Envelope(0, 0, 100D, 100D));
 
-        File tifFile = new File(tifPath);
-        if (tifFile.exists()) {
-            IRasterLayer layer = new RasterLayer(tifPath);
-            if (layer != null) {
-                map.AddLayer(layer);
+            // 加载影像文件数据 /TestData/IMAGE/长葛10村.tif /test/辉县市/IMAGE/01.tif  /storage/emulated/0/FlightTarget/廊坊.tif
+            /*final String tifPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download/collector/长葛10村.tif";
+            Log.i(TAG, tifPath);
+
+            File tifFile = new File(tifPath);
+            if (tifFile.exists()) {
+                IRasterLayer layer = new RasterLayer(tifPath);
+                if (layer != null) {
+                    this.map.AddLayer(layer);
+                }
+            }*/
+
+            // 加载shp矢量文件数据 /TestData/Data/调查村.shp /test/辉县市/TASK/村边界.shp
+            final String shpPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download/collector/Data/调查村.shp";
+            Log.d(TAG, shpPath);
+
+            File shpFile = new File(shpPath);
+            if (shpFile.exists()) {
+                IFeatureLayer layer = new FeatureLayer(shpPath);
+                if (layer != null) {
+                    this.map.AddLayer(layer);
+                }
             }
-        }
 
-        // 根据文件，加载shp矢量图层
-        shpPath = Environment.getExternalStorageDirectory().getAbsolutePath()+ "/Download/collector/Data/调查村.shp";
-        Log.d("Main_Activity", shpPath);
-
-        // /TestData/Data/调查村.shp /test/辉县市/TASK/村边界.shp
-        File shpFile = new File(shpPath);
-        if (shpFile.exists()) {
-            IFeatureLayer layer = new FeatureLayer(shpPath);
-            if (layer != null) {
-                map.AddLayer(layer);
-            }
+            this.map.setExtent(((IFeatureLayer) map.GetLayer(0)).getFeatureClass().getGeometry(1).Extent());
+            this.map.setGeoProjectType(ProjCSType.ProjCS_WGS1984_Albers_BJ);
         }
-        map.setExtent(((IFeatureLayer)map.GetLayer(1)).getFeatureClass().getGeometry(1).Extent());
-        //map.setExtent(((IFeatureLayer)map.GetLayer(1)).getFeatureClass().getGeometry(0).Extent());
-        //map.PartialRefresh();
-        map.setGeoProjectType(ProjCSType.ProjCS_WGS1984_Albers_BJ);
-        return map;
+        return this.map;
     }
 }

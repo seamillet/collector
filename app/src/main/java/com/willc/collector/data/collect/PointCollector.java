@@ -83,7 +83,7 @@ public class PointCollector extends GeoCollector {
 
     @Override
     public boolean isPointFocused(double x, double y) {
-        double limits = mMapControl.getMap()
+        double limits = mMapView.getMap()
                 .getScreenDisplay().ToMapDistance(range);
         boolean flag = false;
         if (mPoints.size() > 0) {
@@ -121,7 +121,7 @@ public class PointCollector extends GeoCollector {
             element.setGeometry(geo);
             mMap.getElementContainer().AddElement(element);
         }
-        mMapControl.PartialRefresh();
+        mMapView.partialRefresh();
     }
 
     @Override

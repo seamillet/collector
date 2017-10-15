@@ -4,9 +4,9 @@ android {
     compileSdkVersion 22
     buildToolsVersion '25.0.0'
 
-//    sourceSets.main {
-//        jniLibs.srcDir 'src/main/jniLibs'  //This is not necessary unless you have precompiled libraries in your project.
-//    }
+    //sourceSets.main {
+    //    jniLibs.srcDir 'src/main/jniLibs'  //This is not necessary unless you have precompiled libraries in your project.
+    //}
 
     defaultConfig {
         applicationId "com.willc.collector"
@@ -29,9 +29,14 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:22.+'
     //compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    testCompile 'junit:junit:4.12'
-    //compile files('libs/thcore20160512.jar')
+    //compile 'org.dom4j:dom4j:2.1.0'
+    compile 'com.alibaba:fastjson:1.2.39'
+    //compile 'com.google.guava:guava:23.0-android'
+
+    compile files('libs/dom4j-2.0.2.jar')
     compile files('libs/thcore20170109_tj.jar')
+
 }

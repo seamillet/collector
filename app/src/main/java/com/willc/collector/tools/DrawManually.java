@@ -20,15 +20,16 @@ import com.willc.collector.R;
 import com.willc.collector.datamgr.GeoCollectManager;
 import com.willc.collector.interoperation.CollectInteroperator;
 import com.willc.collector.interoperation.acticity.CollectActivity;
+import com.willc.collector.lib.map.IMap;
+import com.willc.collector.lib.tools.BaseTool;
+import com.willc.collector.lib.view.BaseControl;
+import com.willc.collector.lib.view.MapView;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 
 import srs.GPS.GPSConvert;
 import srs.Geometry.IPoint;
-import srs.Map.IMap;
-import srs.tools.BaseTool;
-import srs.tools.MapControl;
 
 /**
  * @author keqian
@@ -75,12 +76,12 @@ public class DrawManually extends BaseTool {
     }
 
     @SuppressWarnings("deprecation")
-    public void OnCreate(MapControl buddyControl) {
+    public void OnCreate(BaseControl buddyControl) {
         this.setBuddyControl(buddyControl);
         this.mEnable = true;
 
         if (mMapCurrent == null) {
-            mMapCurrent = ((MapControl)getBuddyControl()).getMap();
+            mMapCurrent = ((MapView)getBuddyControl()).getMap();
         }
         mBitExMap = mMapCurrent.ExportMap(false);
         mBitmapCurrentBack = mBitExMap.copy(Config.RGB_565, true);
@@ -344,8 +345,6 @@ public class DrawManually extends BaseTool {
     /**
      * 娣诲姞鐐�,灏嗗睆骞曞潗鏍囪浆鎹负瀹為檯鍦扮悊鍧愭爣,骞跺悜pCollection涓姞鐐�
      *
-     * @param x 妯潗鏍囷紝鎴栫粡搴�
-     * @param y 绾靛潗鏍囷紝鎴栫含搴�
      * @throws IOException
      */
     private void addPoint(PointF pf) throws IOException {
@@ -366,8 +365,6 @@ public class DrawManually extends BaseTool {
     /**
      * 淇敼鐐�,灏嗗睆骞曞潗鏍囪浆鎹负瀹為檯鍦扮悊鍧愭爣,骞朵慨鏀筽Collection涓鐐瑰潗鏍�
      *
-     * @param x 妯潗鏍囷紝鎴栫粡搴�
-     * @param y 绾靛潗鏍囷紝鎴栫含搴�
      * @throws IOException
      */
     private void updatePoint(PointF pf) throws IOException {

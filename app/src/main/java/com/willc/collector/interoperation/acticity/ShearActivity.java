@@ -18,14 +18,13 @@ import android.widget.Toast;
 import com.willc.collector.R;
 import com.willc.collector.datamgr.GeoSplitManager;
 import com.willc.collector.interoperation.CollectInteroperator;
+import com.willc.collector.lib.map.Map;
+import com.willc.collector.lib.view.MapView;
 import com.willc.collector.tools.GPSUtil;
 import com.willc.collector.tools.ShearTool;
 
 import java.io.IOException;
 import java.util.EventObject;
-
-import srs.Map.Map;
-import srs.tools.MapControl;
 
 /**
  * 要素采集和节点新建Activity
@@ -55,7 +54,8 @@ public class ShearActivity extends Activity {
 	private LinearLayout actionRevoke = null;
 
 	private TextView txtTitle = null;
-	private MapControl mapControl = null;
+	//private MapControl mapControl = null;
+	private MapView mapView = null;
 	// 剪切工具
 	private ShearTool shearTool = null;
 	
@@ -69,12 +69,12 @@ public class ShearActivity extends Activity {
 		setContentView(R.layout.activity_shear);
 
 		// Init and Set MapControl
-		mapControl = (MapControl) findViewById(R.id.map_collect);
-		mapControl.setMap(CollectInteroperator.getMap());
-		mapControl.Refresh();
+		mapView = (MapView) findViewById(R.id.map_collect);
+		mapView.setMap(CollectInteroperator.getMap());
+		mapView.refresh();
 
 		// Init the geometry will be sheared
-		GeoSplitManager.Instance().setMapcontrol(mapControl);
+		GeoSplitManager.Instance().setMapcontrol(mapView);
 		GeoSplitManager.Instance().initGeometry(
 				CollectInteroperator.getShearGeometries());
 
@@ -86,8 +86,8 @@ public class ShearActivity extends Activity {
 		if (shearTool == null) {
 			shearTool = new ShearTool(this);
 		}
-		shearTool.create(mapControl);
-		mapControl.setDrawTool(shearTool);
+		shearTool.create(mapView);
+		mapView.setDrawTool(shearTool);
 
 		// Initial action controls
 		actionBack = (LinearLayout) findViewById(R.id.action_back);
@@ -158,7 +158,7 @@ public class ShearActivity extends Activity {
 			public void onClick(View v) {
 				try {
 					// GPS采集点
-					GPSUtil.addPointForSplitting(((Map)mapControl.getMap()).getGeoProjectType());
+					GPSUtil.addPointForSplitting(((Map)mapView.getMap()).getGeoProjectType());
 					shearTool.checkSplitable();
 					shearTool.setValue();
 				} catch (Exception e) {
@@ -257,7 +257,7 @@ public class ShearActivity extends Activity {
 	 * @throws Exception
 	 */
 	private void dispose() throws IOException {
-		mapControl.setDrawTool(null);
+		mapView.setDrawTool(null);
 		shearTool = null;
 		GeoSplitManager.Instance().dispose();
 		CollectInteroperator.dispose();
