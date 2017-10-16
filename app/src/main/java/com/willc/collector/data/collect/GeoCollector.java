@@ -10,6 +10,8 @@ import android.content.DialogInterface.OnClickListener;
 import android.graphics.Canvas;
 import android.graphics.PointF;
 
+import com.willc.collector.lib.map.IMap;
+import com.willc.collector.lib.view.MapView;
 import com.willc.collector.settings.ElementStyles;
 
 import java.io.IOException;
@@ -26,7 +28,7 @@ import srs.Geometry.IPoint;
 import srs.Geometry.IPolygon;
 import srs.Geometry.IPolyline;
 import srs.Geometry.Point;
-import srs.Map.IMap;
+
 import srs.tools.MapControl;
 
 /**
@@ -35,7 +37,8 @@ import srs.tools.MapControl;
  */
 public abstract class GeoCollector {
 	protected final int range = 30;
-	protected MapControl mMapControl = null;
+	//protected MapControl mMapControl = null;
+	protected MapView mMapView = null;
 	protected IMap mMap = null;
 
 	protected List<IPoint> mPoints = null;
@@ -61,9 +64,20 @@ public abstract class GeoCollector {
 	 * @param mapControl
 	 *            当前操作的MapControl实例
 	 */
-	public void setMapControl(MapControl mapControl) {
-		mMapControl = mapControl;
-		mMap = mMapControl.getMap();
+//	public void setMapControl(MapControl mapControl) {
+//		mMapControl = mapControl;
+//		mMap = mMapControl.getMap();
+//	}
+
+	/**
+	 * 设置对当前操作MapControl对象的引用
+	 *
+	 * @param mapView
+	 *            当前操作的MapControl实例
+	 */
+	public void setMapControl(MapView mapView) {
+		mMapView = mapView;
+		mMap = mMapView.getMap();
 	}
 
 	/**
@@ -236,11 +250,11 @@ public abstract class GeoCollector {
 	 * @throws IOException
 	 */
 	public void clearElements() throws IOException {
-		IMap map = mMapControl.getMap();
+		IMap map = mMapView.getMap();
 		if (map.getElementContainer().getElementCount() > 0) {
 			map.getElementContainer().ClearElement();
 		}
-		mMapControl.PartialRefresh();
+		mMapView.partialRefresh();
 	}
 
 	protected List<IElement> getEditPointElements() {

@@ -7,6 +7,7 @@ import com.willc.collector.data.collect.GeoCollector;
 import com.willc.collector.data.collect.PointCollector;
 import com.willc.collector.data.collect.PolyLineCollector;
 import com.willc.collector.data.collect.PolygonCollector;
+import com.willc.collector.lib.view.MapView;
 
 import java.io.IOException;
 
@@ -20,7 +21,8 @@ import srs.tools.MapControl;
 public final class GeoCollectManager {
 
 	private static GeoCollector mCollector = null;
-	private static MapControl mMapControl = null;
+	//private static MapControl mMapControl = null;
+	private static MapView mMapView = null;
 	private static srsGeometryType mType = null;
 
 	public static GeoCollector getCollector() {
@@ -39,7 +41,7 @@ public final class GeoCollectManager {
 				break;
 			}
 		}
-		mCollector.setMapControl(mMapControl);
+		mCollector.setMapControl(mMapView);
 		return mCollector;
 	}
 
@@ -49,8 +51,18 @@ public final class GeoCollectManager {
 	 * @param mapControl
 	 *            当前操作的MapControl实例
 	 */
-	public static void setMapControl(MapControl mapControl) {
-		mMapControl = mapControl;
+//	public static void setMapControl(MapControl mapControl) {
+//		mMapControl = mapControl;
+//	}
+
+	/**
+	 * 设置对当前操作MapControl对象的引用
+	 *
+	 * @param mapView
+	 *            当前操作的MapControl实例
+	 */
+	public static void setMapControl(MapView mapView) {
+		mMapView = mapView;
 	}
 
 	/**
@@ -75,6 +87,6 @@ public final class GeoCollectManager {
 			mCollector = null;
 		}
 		mType = null;
-		mMapControl = null;
+		mMapView = null;
 	}
 }

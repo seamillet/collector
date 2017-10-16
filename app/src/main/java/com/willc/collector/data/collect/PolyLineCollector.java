@@ -230,7 +230,7 @@ public class PolyLineCollector extends GeoCollector {
 
 	@Override
 	public boolean isPointFocused(double x, double y) {
-		double limits = mMapControl.getMap()
+		double limits = mMapView.getMap()
 				.getScreenDisplay().ToMapDistance(range);
 		boolean flag = false;
 		if (mPoints.size() > 0) {
@@ -250,7 +250,7 @@ public class PolyLineCollector extends GeoCollector {
 
 	@Override
 	public boolean isMidPointFocused(double x, double y) {
-		double limits = mMapControl.getMap()
+		double limits = mMapView.getMap()
 				.getScreenDisplay().ToMapDistance(range);
 		boolean flag = false;
 		if (mMidPoints.size() > 0) {
@@ -394,7 +394,7 @@ public class PolyLineCollector extends GeoCollector {
 				mMap.getElementContainer().AddElements(elements);
 			}
 		}
-		mMapControl.PartialRefresh();
+		mMapView.partialRefresh();
 	}
 
 	@Override

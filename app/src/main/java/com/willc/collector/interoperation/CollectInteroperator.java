@@ -13,6 +13,7 @@ import com.willc.collector.interoperation.event.OnEditBackListener;
 import com.willc.collector.interoperation.event.OnEditSaveListener;
 import com.willc.collector.interoperation.event.OnShearBackListener;
 import com.willc.collector.interoperation.event.OnShearSaveListener;
+import com.willc.collector.lib.map.IMap;
 
 import java.io.IOException;
 import java.util.EventObject;
@@ -21,7 +22,6 @@ import java.util.List;
 import srs.Geometry.IGeometry;
 import srs.Geometry.srsGeometryType;
 import srs.Layer.IFeatureLayer;
-import srs.Map.IMap;
 
 /**
  * @author keqian 点、线、面要素采集交互接口类，用以初始化要素采集设置
@@ -29,10 +29,10 @@ import srs.Map.IMap;
 public class CollectInteroperator {
 
 	private static boolean mIsNew = true;
-	private static IMap mMap = null;
-	private static IGeometry mEditGeometry = null;
+	public static IMap mMap = null;
+	public static IGeometry mEditGeometry = null;
 	private static List<IGeometry> mShearGeometries = null;
-	private static srsGeometryType mGeometryType = null;
+	public static srsGeometryType mGeometryType = null;
 	private static double mCaArea = 0.0;
 	private static String mTitle = null;
 	/**

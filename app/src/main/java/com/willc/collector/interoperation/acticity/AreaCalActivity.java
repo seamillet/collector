@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.willc.collector.R;
 import com.willc.collector.datamgr.GeoCollectManager;
 import com.willc.collector.interoperation.CollectInteroperator;
+import com.willc.collector.lib.view.MapView;
 import com.willc.collector.tools.DrawManually;
 import com.willc.collector.tools.EditTools;
 import com.willc.collector.tools.GPSUtil;
@@ -40,7 +41,8 @@ public class AreaCalActivity extends Activity {
     private LinearLayout actionDelpt = null;
     private LinearLayout actionClear = null;
     private TextView txtTitle = null;
-    private MapControl mapControl = null;
+    //private MapControl mapControl = null;
+    private MapView mapView = null;
     // The tool of collecting points Manually
     private DrawManually drawManually = null;
     // The geometry type of the current feature collecting
@@ -67,10 +69,10 @@ public class AreaCalActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_collect);
         // Init and Set MapControl
-        mapControl = (MapControl) findViewById(R.id.map_collect);
-        mapControl.setMap(CollectInteroperator.getMap());
-        mapControl.Refresh();
-        GeoCollectManager.setMapControl(mapControl);
+        mapView = (MapView) findViewById(R.id.map_collect);
+        mapView.setMap(CollectInteroperator.getMap());
+        mapView.refresh();
+        GeoCollectManager.setMapControl(mapView);
 
         // Set Geometry Type to GeoCollectManager
         mtype = CollectInteroperator.getGeometryType();
@@ -99,8 +101,8 @@ public class AreaCalActivity extends Activity {
         if (drawManually == null) {
             drawManually = new DrawManually(this);
         }
-        drawManually.OnCreate(mapControl);
-        mapControl.setDrawTool(drawManually);
+        drawManually.OnCreate(mapView);
+        mapView.setDrawTool(drawManually);
 
         // Initial action controls
         actionBack = (LinearLayout) findViewById(R.id.action_back);
@@ -173,7 +175,7 @@ public class AreaCalActivity extends Activity {
             @Override
             public void onClick(View v) {
                 try {
-                    GPSUtil.addPointForCollecting(mapControl.getMap().getGeoProjectType());
+                    GPSUtil.addPointForCollecting(mapView.getMap().getGeoProjectType());
                     drawManually.setValues();
                 } catch (Exception e) {
                     showToast(e.getMessage());
@@ -292,7 +294,7 @@ public class AreaCalActivity extends Activity {
      * @throws IOException
      */
     private void dispose() throws IOException {
-        mapControl.setDrawTool(null);
+        mapView.setDrawTool(null);
         drawManually = null;
         mtype = null;
         GeoCollectManager.dispose();

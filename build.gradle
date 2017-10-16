@@ -3,6 +3,9 @@
 buildscript {
     repositories {
         jcenter()
+        // https://mvnrepository.com/artifact/com.google.guava/guava
+        //maven { url "https://mvnrepository.com" }
+        //mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.3'
@@ -15,6 +18,7 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+        //mavenCentral()
     }
 }
 

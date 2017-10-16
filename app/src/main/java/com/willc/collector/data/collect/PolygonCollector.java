@@ -488,7 +488,7 @@ public class PolygonCollector extends GeoCollector {
 				mMap.getElementContainer().AddElements(elements);
 			}
 		}
-		mMapControl.PartialRefresh();
+		mMapView.partialRefresh();
 	}
 
 	@Override

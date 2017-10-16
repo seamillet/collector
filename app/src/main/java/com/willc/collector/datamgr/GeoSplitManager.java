@@ -5,6 +5,8 @@ package com.willc.collector.datamgr;
 
 import com.willc.collector.data.split.Splitter;
 import com.willc.collector.data.split.SplitterFactory;
+import com.willc.collector.lib.map.IMap;
+import com.willc.collector.lib.view.MapView;
 import com.willc.collector.settings.ElementStyles;
 
 import java.io.IOException;
@@ -29,8 +31,6 @@ import srs.Geometry.Point;
 import srs.Geometry.Polygon;
 import srs.Geometry.Polyline;
 import srs.Geometry.srsGeometryType;
-import srs.Map.IMap;
-import srs.tools.MapControl;
 
 /**
  * 剪裁几何对象管理类 单例模式，储存剪裁几何对象数据结构，返回剪裁后的IGeometry对象集合
@@ -39,7 +39,8 @@ import srs.tools.MapControl;
  */
 public class GeoSplitManager {
 	private static GeoSplitManager mShearGeoManager = null;
-	private MapControl mapControl = null;
+	//private MapControl mapControl = null;
+	private MapView mapView = null;
 	private IMap map = null;
 	public double[] areas;
 	/**
@@ -89,9 +90,14 @@ public class GeoSplitManager {
 		return mShearGeoManager;
 	}
 
-	public void setMapcontrol(final MapControl mapControl) {
-		this.mapControl = mapControl;
-		this.map = mapControl.getMap();
+//	public void setMapcontrol(final MapControl mapControl) {
+//		this.mapControl = mapControl;
+//		this.map = mapControl.getMap();
+//	}
+
+	public void setMapcontrol(final MapView mapView) {
+		this.mapView = mapView;
+		this.map = mapView.getMap();
 	}
 
 	/**
@@ -300,13 +306,12 @@ public class GeoSplitManager {
 		refreshGeos();
 		// 刷新剪裁线显示
 		refreshDrawLine();
-		mapControl.PartialRefresh();
+		mapView.partialRefresh();
 	}
 
 	/**
 	 * 清除所有Elements
-	 * 
-	 * @param mapControl
+	 *
 	 * @throws IOException
 	 * @throws Exception
 	 */
@@ -314,7 +319,7 @@ public class GeoSplitManager {
 		if (map.getElementContainer().getElementCount() > 0) {
 			map.getElementContainer().ClearElement();
 		}
-		mapControl.PartialRefresh();
+		mapView.partialRefresh();
 	}
 
 	/**
@@ -371,7 +376,7 @@ public class GeoSplitManager {
 				break;
 			}
 			element.setGeometry(geo);
-			mapControl.getMap().getElementContainer()
+			mapView.getMap().getElementContainer()
 					.AddElement(element);
 			// 增加PointElements
 			if (geo.GeometryType() == srsGeometryType.Polyline) {
@@ -382,7 +387,7 @@ public class GeoSplitManager {
 						elementPt.setSymbol(ElementStyles.FocusedPointStyle);
 					}
 					elementPt.setGeometry(mDrawPoints.get(i));
-					mapControl.getMap().getElementContainer()
+					mapView.getMap().getElementContainer()
 							.AddElement(elementPt);
 				}
 			}
@@ -410,8 +415,8 @@ public class GeoSplitManager {
 				map.getElementContainer().AddElement(pElement);*/
 			}
 		}
-
 	}
+
 	/*public double[] getShearArea(){
 		double[] areas = new double[2];
 		System.out.println("===========个数" + mShearGeometries.size());

@@ -17,13 +17,13 @@ import android.widget.TextView;
 import com.willc.collector.R;
 import com.willc.collector.datamgr.GeoSplitManager;
 import com.willc.collector.interoperation.acticity.ShearActivity;
+import com.willc.collector.lib.tools.BaseTool;
+import com.willc.collector.lib.view.MapView;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 
 import srs.Geometry.IPoint;
-import srs.tools.BaseTool;
-import srs.tools.MapControl;
 
 /**
  * @author keqian 裁剪工具
@@ -47,7 +47,15 @@ public class ShearTool extends BaseTool {
 		mShearActivity = (ShearActivity)context;
 	}
 
-	public void create(MapControl buddyControl) {
+//	public void create(MapControl buddyControl) {
+//		this.setBuddyControl(buddyControl);
+//		this.setEnable(true);
+//
+//		initView();
+//		setValue();
+//	}
+
+	public void create(MapView buddyControl) {
 		this.setBuddyControl(buddyControl);
 		this.setEnable(true);
 
