@@ -23,19 +23,14 @@ public abstract class BaseTool extends BaseCommand implements ITool {
         }
     }
 
-    @Override
     public boolean onTouch(View v, MotionEvent event) {
-        return false;
+        return v.equals(super.mBuddyControl);
     }
 
-    @Override
-    public void drawAgain() {
-
+    public void DrawAgain() {
     }
 
-    @Override
-    public void saveResault() {
-
+    public void SaveResault() {
     }
 }
 

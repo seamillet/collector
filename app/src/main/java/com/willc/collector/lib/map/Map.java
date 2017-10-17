@@ -62,6 +62,8 @@ import com.willc.collector.lib.map.event.MapExtentChangedManager;
  * Created by stg on 17/10/14.
  */
 public class Map implements IMap, LayerActiveChangedListener, SelectionChangedListener, ElementListener {
+    private static final String TAG = Map.class.getSimpleName();
+
     private String mName;
     private IScreenDisplay mScreenDisplay;
     private IElementContainer mElementContainer;
@@ -80,13 +82,45 @@ public class Map implements IMap, LayerActiveChangedListener, SelectionChangedLi
     private boolean isNext;
     private String mMid;
     public static int INDEXDRAWLAYER = -1;
-
     private ActiveLayerChangedManager _ActiveLayerChanged;
-    private LayerChangedManager _LayerChanged;
+    LayerChangedManager _LayerChanged;
     private LayerClearedManager _LayerCleared;
     private LayerAddedManager _LayerAdded;
     private LayerRemovedManager _LayerRemoved;
     private static MapExtentChangedManager _MapExtentChanged = new MapExtentChangedManager();
+
+    public void dispose() throws Exception {
+        this.mName = null;
+        if(this.mScreenDisplay != null) {
+            this.mScreenDisplay.dispose();
+            this.mScreenDisplay = null;
+        }
+
+        this.mElementContainer.dispose();
+        this.mElementContainer = null;
+        this.mGpsContainer.getElementChanged().removeAllListener();
+        this.mGpsContainer = null;
+        this.mSelectionSet = null;
+        this.mCoordinateSystem = null;
+        this.mLayers = null;
+        if(this.mFullExtent != null) {
+            this.mFullExtent.dispose();
+            this.mFullExtent = null;
+        }
+
+        if(this.newDeviceEnv != null) {
+            this.newDeviceEnv.dispose();
+            this.newDeviceEnv = null;
+        }
+
+        if(this.newDisplayEnv != null) {
+            this.newDisplayEnv.dispose();
+            this.newDisplayEnv = null;
+        }
+
+        this.mAllExtents = null;
+        this.mMid = null;
+    }
 
     public Map(IEnvelope deviceExtent) {
         this.mGeoProjectType = ProjCSType.ProjCS_WGS1984_Albers_BJ;
@@ -482,7 +516,6 @@ public class Map implements IMap, LayerActiveChangedListener, SelectionChangedLi
         } catch (Exception var2) {
             Log.e("地图渲染错误", var2.getMessage());
         }
-
     }
 
     public void drawLayer(Handler handler) {
@@ -544,13 +577,12 @@ public class Map implements IMap, LayerActiveChangedListener, SelectionChangedLi
                 var5.printStackTrace();
             }
         }
-
     }
 
     public final void Refresh(Handler handler, Bitmap bitmap) throws Exception {
         this.mScreenDisplay.ResetCaches(bitmap);
         INDEXDRAWLAYER = 0;
-        //ImageDownLoader.StartThread();
+        ImageDownLoader.StartThread();
         this.drawLayer(handler);
     }
 
@@ -560,7 +592,7 @@ public class Map implements IMap, LayerActiveChangedListener, SelectionChangedLi
 
         for(int i = 0; i < layersCount; ++i) {
             if(((ILayer)this.mLayers.get(i)).getVisible()) {
-                ((Layer)(this.mLayers.get(i) instanceof Layer?(ILayer)this.mLayers.get(i):null)).DrawLayer(this.mScreenDisplay, (Handler)null);
+                ((Layer)(this.mLayers.get(i) instanceof Layer?(ILayer)this.mLayers.get(i):null)).DrawLayer(this.mScreenDisplay, null);
             }
         }
 
@@ -654,6 +686,7 @@ public class Map implements IMap, LayerActiveChangedListener, SelectionChangedLi
                 }
             }
         }
+        Log.i(TAG, String.format("CaculateFullExtent, extent=[xmin=%s,ymin=%s,xmax=%s,ymax=%s]", mFullExtent.XMin(), mFullExtent.YMin(), mFullExtent.XMax(), mFullExtent.YMax()));
 
         return this.mFullExtent;
     }
@@ -797,39 +830,6 @@ public class Map implements IMap, LayerActiveChangedListener, SelectionChangedLi
 
     public void setGeoProjectType(ProjCSType value) {
         this.mGeoProjectType = value;
-    }
-
-    public void dispose() throws Exception {
-        this.mName = null;
-        if(this.mScreenDisplay != null) {
-            this.mScreenDisplay.dispose();
-            this.mScreenDisplay = null;
-        }
-
-        this.mElementContainer.dispose();
-        this.mElementContainer = null;
-        this.mGpsContainer.getElementChanged().removeAllListener();
-        this.mGpsContainer = null;
-        this.mSelectionSet = null;
-        this.mCoordinateSystem = null;
-        this.mLayers = null;
-        if(this.mFullExtent != null) {
-            this.mFullExtent.dispose();
-            this.mFullExtent = null;
-        }
-
-        if(this.newDeviceEnv != null) {
-            this.newDeviceEnv.dispose();
-            this.newDeviceEnv = null;
-        }
-
-        if(this.newDisplayEnv != null) {
-            this.newDisplayEnv.dispose();
-            this.newDisplayEnv = null;
-        }
-
-        this.mAllExtents = null;
-        this.mMid = null;
     }
 }
 

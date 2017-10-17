@@ -7,7 +7,7 @@ import android.view.View;
  */
 
 public interface ITool extends ICommand,View.OnTouchListener {
-    void drawAgain();
+    void DrawAgain();
 
-    void saveResault();
+    void SaveResault();
 }

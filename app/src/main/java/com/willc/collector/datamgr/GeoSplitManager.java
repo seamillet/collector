@@ -306,7 +306,7 @@ public class GeoSplitManager {
 		refreshGeos();
 		// 刷新剪裁线显示
 		refreshDrawLine();
-		mapView.partialRefresh();
+		mapView.PartialRefresh();
 	}
 
 	/**
@@ -319,7 +319,7 @@ public class GeoSplitManager {
 		if (map.getElementContainer().getElementCount() > 0) {
 			map.getElementContainer().ClearElement();
 		}
-		mapView.partialRefresh();
+		mapView.PartialRefresh();
 	}
 
 	/**

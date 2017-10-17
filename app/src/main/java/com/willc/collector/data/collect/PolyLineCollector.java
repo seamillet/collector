@@ -394,7 +394,7 @@ public class PolyLineCollector extends GeoCollector {
 				mMap.getElementContainer().AddElements(elements);
 			}
 		}
-		mMapView.partialRefresh();
+		mMapView.PartialRefresh();
 	}
 
 	@Override

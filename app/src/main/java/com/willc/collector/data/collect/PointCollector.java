@@ -121,7 +121,7 @@ public class PointCollector extends GeoCollector {
             element.setGeometry(geo);
             mMap.getElementContainer().AddElement(element);
         }
-        mMapView.partialRefresh();
+        mMapView.PartialRefresh();
     }
 
     @Override

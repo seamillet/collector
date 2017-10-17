@@ -38,7 +38,7 @@ import srs.Layer.IFeatureLayer;
 import srs.Layer.IRasterLayer;
 import srs.Layer.RasterLayer;
 
-public class TestActivity extends Activity {
+public class TestActivity extends Activity implements View.OnClickListener{
     private static final String TAG = TestActivity.class.getSimpleName();
 
     private final CharSequence[] items = {"Point", "Line", "Polygon"};
@@ -63,80 +63,9 @@ public class TestActivity extends Activity {
         actionEdit = (LinearLayout) findViewById(R.id.action_edit);
         actionShear = (LinearLayout)findViewById(R.id.action_shear);
 
-        // 新建单击
-        actionNew.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-                generateDialog("新建").show();
-            }
-        });
-        // 编辑
-        actionEdit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    CollectInteroperator.init(loadMap(), ((IFeatureLayer) loadMap().GetLayer(1))
-                            .getFeatureClass().getGeometry(1));
-                    CollectInteroperator.CollectEventManager
-                            .setOnEditBackListener(new OnEditBackListener() {
-                                @Override
-                                public boolean editBack(EventObject event) {
-                                    return true;
-                                }
-                            });
-                    CollectInteroperator.CollectEventManager
-                            .setOnEditSaveListener(new OnEditSaveListener() {
-                                @Override
-                                public boolean editSave(EventObject event) {
-                                    return true;
-                                }
-                            });
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                Intent intent = new Intent(TestActivity.this,
-                        CollectActivity.class);
-                intent.putExtra("obtainArea",true);
-                startActivity(intent);
-                //generateDialog("编辑").show();
-            }
-        });
-        // 剪切单击
-        actionShear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    IMap map = loadMap();
-                    mGeometrys.add(((IFeatureLayer) map.GetLayer(1))
-                            .getFeatureClass().getGeometry(1));
-                    CollectInteroperator.init(map, mGeometrys);
-                    CollectInteroperator.CollectEventManager
-                            .setOnShearBackListener(new OnShearBackListener() {
-                                @Override
-                                public boolean shearBack(EventObject event) {
-                                    // TODO Auto-generated method stub
-                                    return true;
-                                }
-                            });
-
-                    CollectInteroperator.CollectEventManager
-                            .setOnShearSaveListener(new OnShearSaveListener() {
-                                @Override
-                                public boolean shearSave(EventObject event,double[] area) {
-                                    return true;
-                                }
-                            });
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                Intent intent = new Intent(TestActivity.this,
-                        ShearActivity.class);
-                startActivity(intent);
-            }
-        });
+        actionNew.setOnClickListener(this);  // 新建单击
+        actionEdit.setOnClickListener(this);  // 编辑
+        actionShear.setOnClickListener(this); // 剪切单击
 
         try {
             mapView.setMap(loadMap());
@@ -144,6 +73,144 @@ public class TestActivity extends Activity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.action_new:
+                actionNew();
+                break;
+            case R.id.action_edit:
+                actionEdit();
+                break;
+            case R.id.action_shear:
+                actionShear();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void actionNew() {
+        try {
+            CollectInteroperator.init(loadMap(), srsGeometryType.Polygon);
+            CollectInteroperator.CollectEventManager
+                    .setOnCollectBackListener(new OnCollectBackListener() {
+                        @Override
+                        public boolean collectBack(EventObject event) {
+                            // TODO Auto-generated method stub
+                            return true;
+                        }
+                    });
+            CollectInteroperator.CollectEventManager
+                    .setOnCollectSaveListener(new OnCollectSaveListener() {
+                        @Override
+                        public boolean collectSave(EventObject event,double area) {
+                            // TODO Auto-generated method stub
+                            return true;
+                        }
+                    });
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        Intent intent = new Intent(TestActivity.this, CollectActivity.class);
+        intent.putExtra("obtainArea",true);
+        startActivity(intent);
+    }
+
+    private void actionEdit() {
+        try {
+            CollectInteroperator.init(loadMap(), ((IFeatureLayer) loadMap().GetLayer(1)).getFeatureClass().getGeometry(1));
+            CollectInteroperator.CollectEventManager
+                    .setOnEditBackListener(new OnEditBackListener() {
+                        @Override
+                        public boolean editBack(EventObject event) {
+                            return true;
+                        }
+                    });
+            CollectInteroperator.CollectEventManager
+                    .setOnEditSaveListener(new OnEditSaveListener() {
+                        @Override
+                        public boolean editSave(EventObject event) {
+                            return true;
+                        }
+                    });
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        Intent intent = new Intent(TestActivity.this, CollectActivity.class);
+        intent.putExtra("obtainArea",true);
+        startActivity(intent);
+    }
+
+    private void actionShear() {
+        try {
+            mGeometrys.add(((IFeatureLayer) loadMap().GetLayer(1)).getFeatureClass().getGeometry(1));
+            CollectInteroperator.init(loadMap(), mGeometrys);
+            CollectInteroperator.CollectEventManager
+                    .setOnShearBackListener(new OnShearBackListener() {
+                        @Override
+                        public boolean shearBack(EventObject event) {
+                            // TODO Auto-generated method stub
+                            return true;
+                        }
+                    });
+
+            CollectInteroperator.CollectEventManager
+                    .setOnShearSaveListener(new OnShearSaveListener() {
+                        @Override
+                        public boolean shearSave(EventObject event,double[] area) {
+                            return true;
+                        }
+                    });
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        Intent intent = new Intent(TestActivity.this, ShearActivity.class);
+        startActivity(intent);
+    }
+
+    /**
+     * 测试用 加载测试数据
+     *
+     * @throws Exception
+     */
+    public IMap loadMap() throws Exception {
+        if (this.map == null) {
+            this.map = new Map(new Envelope(0, 0, 100D, 100D));
+
+            // 加载影像文件数据 /TestData/IMAGE/长葛10村.tif /test/辉县市/IMAGE/01.tif  /storage/emulated/0/FlightTarget/廊坊.tif
+            /*final String tifPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download/collector/长葛10村.tif";
+            Log.i(TAG, tifPath);
+
+            File tifFile = new File(tifPath);
+            if (tifFile.exists()) {
+                IRasterLayer layer = new RasterLayer(tifPath);
+                if (layer != null) {
+                    this.map.AddLayer(layer);
+                }
+            }*/
+
+            // 加载shp矢量文件数据 /TestData/Data/调查村.shp /test/辉县市/TASK/村边界.shp
+            /*final String shpPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download/collector/Data/调查村.shp";
+            Log.d(TAG, shpPath);
+
+            File shpFile = new File(shpPath);
+            if (shpFile.exists()) {
+                IFeatureLayer layer = new FeatureLayer(shpPath);
+                if (layer != null) {
+                    this.map.AddLayer(layer);
+                }
+            }
+
+            this.map.setExtent(((IFeatureLayer) map.GetLayer(0)).getFeatureClass().getGeometry(1).Extent());
+            this.map.setGeoProjectType(ProjCSType.ProjCS_WGS1984_Albers_BJ);*/
+        }
+        return this.map;
     }
 
     private AlertDialog generateDialog(final CharSequence title) {
@@ -200,44 +267,5 @@ public class TestActivity extends Activity {
             }
         });
         return builder.create();
-    }
-
-    /**
-     * 测试用 加载测试数据
-     *
-     * @throws Exception
-     */
-    public IMap loadMap() throws Exception {
-        if (this.map == null) {
-            this.map = new Map(new Envelope(0, 0, 100D, 100D));
-
-            // 加载影像文件数据 /TestData/IMAGE/长葛10村.tif /test/辉县市/IMAGE/01.tif  /storage/emulated/0/FlightTarget/廊坊.tif
-            /*final String tifPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download/collector/长葛10村.tif";
-            Log.i(TAG, tifPath);
-
-            File tifFile = new File(tifPath);
-            if (tifFile.exists()) {
-                IRasterLayer layer = new RasterLayer(tifPath);
-                if (layer != null) {
-                    this.map.AddLayer(layer);
-                }
-            }*/
-
-            // 加载shp矢量文件数据 /TestData/Data/调查村.shp /test/辉县市/TASK/村边界.shp
-            final String shpPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download/collector/Data/调查村.shp";
-            Log.d(TAG, shpPath);
-
-            File shpFile = new File(shpPath);
-            if (shpFile.exists()) {
-                IFeatureLayer layer = new FeatureLayer(shpPath);
-                if (layer != null) {
-                    this.map.AddLayer(layer);
-                }
-            }
-
-            this.map.setExtent(((IFeatureLayer) map.GetLayer(0)).getFeatureClass().getGeometry(1).Extent());
-            this.map.setGeoProjectType(ProjCSType.ProjCS_WGS1984_Albers_BJ);
-        }
-        return this.map;
     }
 }

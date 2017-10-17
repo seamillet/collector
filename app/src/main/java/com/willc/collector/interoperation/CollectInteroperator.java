@@ -34,7 +34,7 @@ public class CollectInteroperator {
 	private static List<IGeometry> mShearGeometries = null;
 	public static srsGeometryType mGeometryType = null;
 	private static double mCaArea = 0.0;
-	private static String mTitle = null;
+
 	/**
 	 * 初始化设置(新建)
 	 * 
@@ -47,7 +47,6 @@ public class CollectInteroperator {
 		mIsNew = true;
 		mMap = map;
 		mGeometryType = geometryType;
-		mTitle=null;
 	}
 
 	/**
@@ -60,8 +59,8 @@ public class CollectInteroperator {
 		mIsNew = false;
 		mMap = map;
 		mGeometryType = geometryType;
-		mTitle = title;
 	}
+
 	/**
 	 * 初始化设置(编辑)
 	 * 
@@ -131,9 +130,6 @@ public class CollectInteroperator {
 		String area = CollectActivity.Area_value;
 		mCaArea = Double.valueOf(area);
 		return mCaArea;
-	}
-	public static String getmTitle(){
-		return mTitle;
 	}
 
 	public static srsGeometryType getGeometryType() {
