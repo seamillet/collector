@@ -19,7 +19,7 @@ import com.willc.collector.R;
 import com.willc.collector.datamgr.GeoCollectManager;
 import com.willc.collector.interoperation.CollectInteroperator;
 import com.willc.collector.lib.view.MapView;
-import com.willc.collector.tools.DrawManually;
+import com.willc.collector.tools.DrawingTool;
 import com.willc.collector.tools.EditTools;
 import com.willc.collector.tools.GPSUtil;
 
@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.util.EventObject;
 
 import srs.Geometry.srsGeometryType;
-import srs.tools.MapControl;
 
 /**
  * 面积计算Activity
@@ -44,7 +43,7 @@ public class AreaCalActivity extends Activity {
     //private MapControl mapControl = null;
     private MapView mapView = null;
     // The tool of collecting points Manually
-    private DrawManually drawManually = null;
+    private DrawingTool drawManually = null;
     // The geometry type of the current feature collecting
     private srsGeometryType mtype = null;
     private String mtitle = null;
@@ -71,7 +70,7 @@ public class AreaCalActivity extends Activity {
         // Init and Set MapControl
         mapView = (MapView) findViewById(R.id.map_collect);
         mapView.setMap(CollectInteroperator.getMap());
-        mapView.refresh();
+        mapView.Refresh();
         GeoCollectManager.setMapControl(mapView);
 
         // Set Geometry Type to GeoCollectManager
@@ -97,9 +96,9 @@ public class AreaCalActivity extends Activity {
         }
 
 
-        // Init DrawManually tool and Set it to BuddyControl
+        // Init DrawingTool tool and Set it to BuddyControl
         if (drawManually == null) {
-            drawManually = new DrawManually(this);
+            drawManually = new DrawingTool(this);
         }
         drawManually.OnCreate(mapView);
         mapView.setDrawTool(drawManually);

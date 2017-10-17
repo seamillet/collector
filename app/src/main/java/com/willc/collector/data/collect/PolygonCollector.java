@@ -292,8 +292,7 @@ public class PolygonCollector extends GeoCollector {
 			mMidPoints.add(calcMidPoint(mPoints.get(i), mPoints.get(i + 1)));
 		}
 		// 起点到尾点的中点
-		mMidPoints.add(calcMidPoint(mPoints.get(0),
-				mPoints.get(currentPointIndex)));
+		mMidPoints.add(calcMidPoint(mPoints.get(0), mPoints.get(currentPointIndex)));
 	}
 
 	@Override
@@ -488,7 +487,7 @@ public class PolygonCollector extends GeoCollector {
 				mMap.getElementContainer().AddElements(elements);
 			}
 		}
-		mMapView.partialRefresh();
+		mMapView.PartialRefresh();
 	}
 
 	@Override

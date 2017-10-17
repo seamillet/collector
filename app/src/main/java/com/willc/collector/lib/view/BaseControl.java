@@ -22,7 +22,6 @@ import srs.tools.Event.DrawToolEnableManager;
 public class BaseControl extends RelativeLayout implements View.OnClickListener,View.OnTouchListener {
     private ITool mTool;
     private DrawToolEnableManager mDrawToolEnableChanger = new DrawToolEnableManager();
-    public int MODE = 0;
 
     public BaseControl(Context context) {
         super(context);
@@ -44,10 +43,6 @@ public class BaseControl extends RelativeLayout implements View.OnClickListener,
     public void StopEdit() {
     }
 
-    public void StopDraw() {
-
-    }
-
     public ITool getDrawTool() {
         return this.mTool;
     }
@@ -57,8 +52,10 @@ public class BaseControl extends RelativeLayout implements View.OnClickListener,
             if(this.mTool != null) {
                 this.mTool = null;
             }
+
             this.mTool = value;
         }
+
     }
 
     public void setGPSTool(ITool value) {
@@ -102,6 +99,9 @@ public class BaseControl extends RelativeLayout implements View.OnClickListener,
         return 0.0D;
     }
 
+    public void PartialRefresh() throws Exception {
+    }
+
     public void Copy(BaseControl targetControl) {
     }
 
@@ -112,15 +112,12 @@ public class BaseControl extends RelativeLayout implements View.OnClickListener,
         return null;
     }
 
-    public void refresh() {
+    public void Refresh() {
     }
 
-    public void partialRefresh() throws Exception {
+    public void DrawTrack() {
     }
 
-    public void drawTrack() {
-    }
-
-    public void drawTrack(Bitmap bit) {
+    public void DrawTrack(Bitmap bit) {
     }
 }

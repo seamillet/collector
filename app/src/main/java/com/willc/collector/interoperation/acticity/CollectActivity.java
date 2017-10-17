@@ -19,7 +19,7 @@ import com.willc.collector.R;
 import com.willc.collector.datamgr.GeoCollectManager;
 import com.willc.collector.interoperation.CollectInteroperator;
 import com.willc.collector.lib.view.MapView;
-import com.willc.collector.tools.DrawManually;
+import com.willc.collector.tools.DrawingTool;
 import com.willc.collector.tools.EditTools;
 import com.willc.collector.tools.GPSUtil;
 
@@ -27,12 +27,17 @@ import java.io.IOException;
 import java.util.EventObject;
 
 import srs.Geometry.srsGeometryType;
-import srs.tools.MapControl;
 
 /**
  * 要素采集和节点编辑Activity
  */
 public class CollectActivity extends Activity {
+    private MapView mapView = null;
+    // The tool of collecting points Manually
+    private DrawingTool drawingTool = null;
+    // The geometry type of the current feature collecting
+    private srsGeometryType mtype = null;
+
     // UI references.
     private LinearLayout actionBack = null;
     private LinearLayout actionSave = null;
@@ -41,37 +46,20 @@ public class CollectActivity extends Activity {
     private LinearLayout actionDelpt = null;
     private LinearLayout actionClear = null;
     private TextView txtTitle = null;
-    //private MapControl mapControl = null;
-    private MapView mapView = null;
-    // The tool of collecting points Manually
-    private DrawManually drawManually = null;
-    // The geometry type of the current feature collecting
-    private srsGeometryType mtype = null;
-    private String mtitle = null;
-
-
-    public OnPointListener p;
 
     private SharedPreferences shared;
-
-    public void setOnPointListener(OnPointListener pointListener) {
-        this.p = pointListener;
-    }
-
-    public interface OnPointListener {
-
-        void pointListening(View view);
-    }
+    public static String Area_value;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_collect);
+
         // Init and Set MapControl
         mapView = (MapView) findViewById(R.id.map_collect);
         mapView.setMap(CollectInteroperator.getMap());
-        mapView.refresh();
+        mapView.Refresh();
         GeoCollectManager.setMapControl(mapView);
 
         // Set Geometry Type to GeoCollectManager
@@ -81,8 +69,7 @@ public class CollectActivity extends Activity {
         // Edit settings
         if (!CollectInteroperator.isNew()) {
             try {
-                GeoCollectManager.getCollector().setEditGeometry(
-                        CollectInteroperator.getEditGeometry());
+                GeoCollectManager.getCollector().setEditGeometry(CollectInteroperator.getEditGeometry());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -90,19 +77,15 @@ public class CollectActivity extends Activity {
 
         // Set title according to Geometry Type
         txtTitle = (TextView) findViewById(R.id.title);
-        if (CollectInteroperator.getmTitle()!=null){
-            txtTitle.setText(CollectInteroperator.getmTitle());
-        }else {
-            txtTitle.setText(getTitleDesc());
-        }
+        txtTitle.setText("量房采集");
 
 
-        // Init DrawManually tool and Set it to BuddyControl
-        if (drawManually == null) {
-            drawManually = new DrawManually(this);
+        // Init DrawingTool tool and Set it to BuddyControl
+        if (drawingTool == null) {
+            drawingTool = new DrawingTool(this);
         }
-        drawManually.OnCreate(mapView);
-        mapView.setDrawTool(drawManually);
+        drawingTool.OnCreate(mapView);
+        mapView.setDrawTool(drawingTool);
 
         // Initial action controls
         actionBack = (LinearLayout) findViewById(R.id.action_back);
@@ -112,20 +95,11 @@ public class CollectActivity extends Activity {
         actionDelpt = (LinearLayout) findViewById(R.id.action_delpt);
         actionClear = (LinearLayout) findViewById(R.id.action_clear);
 
-        if(CollectActivity.this.getIntent().getExtras()!=null)
-        {
-            String checkMap = CollectActivity.this.getIntent().getExtras().getString("check_map");
-            if("check_map".equals(checkMap))
-            {
-                actionSave.setVisibility(View.INVISIBLE);
-            }
-        }
-
         // Set click event to them
         bindEventToActions();
     }
 
-    public static String Area_value;
+
 
     private void bindEventToActions() {
         actionBack.setOnClickListener(new OnClickListener() {
@@ -164,7 +138,6 @@ public class CollectActivity extends Activity {
                             CollectActivity.this.setResult(601, intent);
 						}
 						finish();
-						
 					}
 				}
 			}
@@ -174,7 +147,7 @@ public class CollectActivity extends Activity {
             public void onClick(View v) {
                 try {
                     GPSUtil.addPointForCollecting( mapView.getMap().getGeoProjectType());
-                    drawManually.setValues();
+                    drawingTool.setValues();
                 } catch (Exception e) {
                     showToast(e.getMessage());
                 }
@@ -185,7 +158,7 @@ public class CollectActivity extends Activity {
             public void onClick(View v) {
                 try {
                     EditTools.undo();
-                    drawManually.setValues();
+                    drawingTool.setValues();
                 } catch (Exception e) {
                     showToast(e.getMessage());
                 }
@@ -197,7 +170,7 @@ public class CollectActivity extends Activity {
                 public void onClick(View v) {
                     try {
                         EditTools.delpt();
-                        drawManually.setValues();
+                        drawingTool.setValues();
                     } catch (Exception e) {
                         showToast(e.getMessage());
                     }
@@ -208,7 +181,7 @@ public class CollectActivity extends Activity {
                 public void onClick(View v) {
                     try {
                         EditTools.clear();
-                        drawManually.setValues();
+                        drawingTool.setValues();
                     } catch (Exception e) {
                         showToast(e.getMessage());
                     }
@@ -221,19 +194,16 @@ public class CollectActivity extends Activity {
     }
 
     private String getTitleDesc() {
-        if (mtype != null) {
-            switch (mtype) {
-                case Point:
-                    return "点要素采集";
-                case Polyline:
-                    return "线要素采集";
-                case Polygon:
-                    return "面要素采集";
-                default:
-                    return CollectInteroperator.getmTitle();
-            }
+        switch (mtype) {
+            case Point:
+                return "点要素采集";
+            case Polyline:
+                return "线要素采集";
+            case Polygon:
+                return "面要素采集";
+            default:
+                return "量算";
         }
-        return "量算";
     }
 
     private void back() {
@@ -304,7 +274,7 @@ public class CollectActivity extends Activity {
      */
     private void dispose() throws IOException {
         mapView.setDrawTool(null);
-        drawManually = null;
+        drawingTool = null;
         mtype = null;
         GeoCollectManager.dispose();
         CollectInteroperator.dispose();
@@ -315,5 +285,4 @@ public class CollectActivity extends Activity {
     private void showToast(CharSequence msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT);
     }
-
 }

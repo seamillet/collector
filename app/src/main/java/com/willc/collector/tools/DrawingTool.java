@@ -11,6 +11,7 @@ import android.graphics.Canvas;
 import android.graphics.PointF;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Vibrator;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -34,7 +35,8 @@ import srs.Geometry.IPoint;
 /**
  * @author keqian
  */
-public class DrawManually extends BaseTool {
+public class DrawingTool extends BaseTool {
+    private static final String TAG = DrawingTool.class.getSimpleName();
 
     Context mContext = null;
     IMap mMapCurrent = null;
@@ -42,6 +44,7 @@ public class DrawManually extends BaseTool {
     Bitmap mBitExMap = null;
     // 绉诲姩鏃剁殑鐢诲竷
     Bitmap mBitmapCurrentBack = null;
+
     PointF mDownPt = null;
 
     boolean mIsDraw = true;
@@ -68,25 +71,23 @@ public class DrawManually extends BaseTool {
 
     private SharedPreferences.Editor shared_edit;
 
-    public DrawManually(Context context) {
+    public DrawingTool(Context context) {
         super.setRate();
         mContext = context;
         mDownPt = new PointF();
         mCollectActivity = (CollectActivity) context;
     }
 
-    @SuppressWarnings("deprecation")
     public void OnCreate(BaseControl buddyControl) {
         this.setBuddyControl(buddyControl);
         this.mEnable = true;
 
         if (mMapCurrent == null) {
-            mMapCurrent = ((MapView)getBuddyControl()).getMap();
+            mMapCurrent = ((MapView) getBuddyControl()).getMap();
         }
         mBitExMap = mMapCurrent.ExportMap(false);
         mBitmapCurrentBack = mBitExMap.copy(Config.RGB_565, true);
-        BitmapDrawable bd = new BitmapDrawable(getBuddyControl().getContext()
-                .getResources(), mBitmapCurrentBack);
+        BitmapDrawable bd = new BitmapDrawable(getBuddyControl().getContext().getResources(), mBitmapCurrentBack);
         (getBuddyControl()).setBackgroundDrawable(bd);
 
         setValues();
@@ -104,17 +105,17 @@ public class DrawManually extends BaseTool {
         lengthValue = GeoCollectManager.getCollector().getLength();
         positionValue = GeoCollectManager.getCollector().getPosition();
         angleValue = GeoCollectManager.getCollector().getAngle();
-        if (GeoCollectManager.getCollector().getEachSideAngle().length>0){
-            if (GeoCollectManager.getCollector().getEachSideAngle().length>1){
-                for (int i = 0;i<GeoCollectManager.getCollector().getEachSideAngle().length;i++){
-                    System.out.println("angle+++++++++++:"+String.format("%.1f", GeoCollectManager.getCollector().getEachSideAngle()[i]));
+        if (GeoCollectManager.getCollector().getEachSideAngle().length > 0) {
+            if (GeoCollectManager.getCollector().getEachSideAngle().length > 1) {
+                for (int i = 0; i < GeoCollectManager.getCollector().getEachSideAngle().length; i++) {
+                    System.out.println("angle+++++++++++:" + String.format("%.1f", GeoCollectManager.getCollector().getEachSideAngle()[i]));
                 }
             }
         }
-        if (GeoCollectManager.getCollector().getEachSideLength().length>0){
-            if (GeoCollectManager.getCollector().getEachSideLength().length>1){
-                for (int i = 0;i<GeoCollectManager.getCollector().getEachSideLength().length;i++){
-                    System.out.println("length+++++++++++:"+String.format("%.1f", GeoCollectManager.getCollector().getEachSideLength()[i]));
+        if (GeoCollectManager.getCollector().getEachSideLength().length > 0) {
+            if (GeoCollectManager.getCollector().getEachSideLength().length > 1) {
+                for (int i = 0; i < GeoCollectManager.getCollector().getEachSideLength().length; i++) {
+                    System.out.println("length+++++++++++:" + String.format("%.1f", GeoCollectManager.getCollector().getEachSideLength()[i]));
                 }
             }
         }
@@ -200,7 +201,7 @@ public class DrawManually extends BaseTool {
         if (actionAngleValue != null) {
             if (angleValue != -1) {
                 actionAngleValue.setText(mCollectActivity.getResources().getString(R.string.action_angle)
-                        + String.format("%.1f",angleValue));
+                        + String.format("%.1f", angleValue));
             } else {
                 actionAngleValue.setText(mCollectActivity.getResources().getString(R.string.action_angle)
                         + mCollectActivity.getResources().getString(R.string.action_invalid));
@@ -208,7 +209,6 @@ public class DrawManually extends BaseTool {
         } else {
             actionAngleValue.setVisibility(View.GONE);
         }
-
     }
 
     public BigDecimal reservedDecimal(double x) {
@@ -225,20 +225,17 @@ public class DrawManually extends BaseTool {
                 case MotionEvent.ACTION_DOWN:
                     mDownPt.set(event.getX(), event.getY());
                     IPoint point = toWorldPoint(mDownPt);
-                    if (GeoCollectManager.getCollector().isPointFocused(point.X(),
-                            point.Y())) {
+                    Log.e(TAG, String.format("world point[x=%s,y=%s]", point.X(), point.Y()));
+                    if (GeoCollectManager.getCollector().isPointFocused(point.X(), point.Y())) {
                         GeoCollectManager.getCollector().refresh();
-                        Vibrator vibrator = (Vibrator) (mContext
-                                .getSystemService(Context.VIBRATOR_SERVICE));
+                        Vibrator vibrator = (Vibrator) (mContext.getSystemService(Context.VIBRATOR_SERVICE));
                         vibrator.vibrate(60);
                         mIsDraw = false;
                         mCanDrag = true;
                         flag = true;
-                    } else if (GeoCollectManager.getCollector().isMidPointFocused(
-                            point.X(), point.Y())) {
+                    } else if (GeoCollectManager.getCollector().isMidPointFocused(point.X(), point.Y())) {
                         GeoCollectManager.getCollector().refresh();
-                        Vibrator vibrator = (Vibrator) (mContext
-                                .getSystemService(Context.VIBRATOR_SERVICE));
+                        Vibrator vibrator = (Vibrator) (mContext.getSystemService(Context.VIBRATOR_SERVICE));
                         vibrator.vibrate(60);
                         mIsDraw = false;
                         mCanDrag = true;
@@ -369,15 +366,12 @@ public class DrawManually extends BaseTool {
      */
     private void updatePoint(PointF pf) throws IOException {
         GeoCollectManager.getCollector().updatePoint(toWorldPoint(pf));
-
     }
 
     private IPoint toWorldPoint(PointF pf) {
-        return getBuddyControl().ToWorldPoint(
-                new PointF(pf.x * mRate, pf.y * mRate));
+        return getBuddyControl().ToWorldPoint(new PointF(pf.x * mRate, pf.y * mRate));
     }
 
-    @SuppressWarnings("deprecation")
     private void pointDrag(MotionEvent event) throws Exception {
         // clear elements
         GeoCollectManager.getCollector().clearElements();
@@ -393,7 +387,6 @@ public class DrawManually extends BaseTool {
         getBuddyControl().setBackgroundDrawable(bg);
     }
 
-    @SuppressWarnings("deprecation")
     private void lineDrag(MotionEvent event) throws Exception {
         // Clear elements
         GeoCollectManager.getCollector().clearElements();
@@ -417,7 +410,6 @@ public class DrawManually extends BaseTool {
         getBuddyControl().setBackgroundDrawable(bg);
     }
 
-    @SuppressWarnings("deprecation")
     private void polygonDrag(MotionEvent event) throws Exception {
         // Clear elements
         GeoCollectManager.getCollector().clearElements();

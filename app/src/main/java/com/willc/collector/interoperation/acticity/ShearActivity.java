@@ -71,7 +71,7 @@ public class ShearActivity extends Activity {
 		// Init and Set MapControl
 		mapView = (MapView) findViewById(R.id.map_collect);
 		mapView.setMap(CollectInteroperator.getMap());
-		mapView.refresh();
+		mapView.Refresh();
 
 		// Init the geometry will be sheared
 		GeoSplitManager.Instance().setMapcontrol(mapView);

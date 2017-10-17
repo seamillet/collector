@@ -171,7 +171,6 @@ public class ActiveView implements IActiveView{
                     this.FocusMap(map);
                 }
             }
-
         }
     }
 

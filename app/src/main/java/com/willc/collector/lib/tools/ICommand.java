@@ -20,4 +20,6 @@ public interface ICommand extends View.OnClickListener{
     BaseControl getBuddyControl();
 
     void setBuddyControl(BaseControl var1);
+
+    void onClick(View var1);
 }

@@ -254,7 +254,7 @@ public abstract class GeoCollector {
 		if (map.getElementContainer().getElementCount() > 0) {
 			map.getElementContainer().ClearElement();
 		}
-		mMapView.partialRefresh();
+		mMapView.PartialRefresh();
 	}
 
 	protected List<IElement> getEditPointElements() {

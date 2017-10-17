@@ -35,8 +35,6 @@ public abstract class BaseCommand implements ICommand {
         this.mBuddyControl = basecontrol;
     }
 
-    @Override
     public void onClick(View v) {
-
     }
 }
