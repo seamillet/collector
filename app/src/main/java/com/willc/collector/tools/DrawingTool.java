@@ -38,6 +38,9 @@ import srs.Geometry.IPoint;
 public class DrawingTool extends BaseTool {
     private static final String TAG = DrawingTool.class.getSimpleName();
 
+    private static int MODE_COLLECT = 0;
+    //private static int MODE_COLLECT = 0;
+
     Context mContext = null;
     IMap mMapCurrent = null;
     // MapControl杈撳嚭鐨勫簳鍥�
@@ -47,6 +50,7 @@ public class DrawingTool extends BaseTool {
 
     PointF mDownPt = null;
 
+    boolean mIsFirstLine = false;
     boolean mIsDraw = true;
     boolean mCanDrag = false;
     boolean mIsDrag = false;
@@ -90,7 +94,7 @@ public class DrawingTool extends BaseTool {
         BitmapDrawable bd = new BitmapDrawable(getBuddyControl().getContext().getResources(), mBitmapCurrentBack);
         (getBuddyControl()).setBackgroundDrawable(bd);
 
-        setValues();
+        //setValues();
     }
 
     public void setValues() {
@@ -220,18 +224,30 @@ public class DrawingTool extends BaseTool {
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         boolean flag = false;
+
         try {
+            int mode = 0;
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     mDownPt.set(event.getX(), event.getY());
                     IPoint point = toWorldPoint(mDownPt);
-                    Log.e(TAG, String.format("world point[x=%s,y=%s]", point.X(), point.Y()));
-                    if (GeoCollectManager.getCollector().isPointFocused(point.X(), point.Y())) {
+                    Log.e(TAG, String.format("action_down world point[x=%s,y=%s]", point.X(), point.Y()));
+
+                    final int sizeOfPoints = GeoCollectManager.getCollector().getPointsSize();
+                    if (sizeOfPoints == 0) {
+                        Log.e(TAG, String.format("size of points is %s", sizeOfPoints));
+                        addPoint(mDownPt);
+                        mIsFirstLine = true;
+                        flag = true;
+                    }
+
+                    /*if (GeoCollectManager.getCollector().isPointFocused(point.X(), point.Y())) {
                         GeoCollectManager.getCollector().refresh();
                         Vibrator vibrator = (Vibrator) (mContext.getSystemService(Context.VIBRATOR_SERVICE));
                         vibrator.vibrate(60);
                         mIsDraw = false;
                         mCanDrag = true;
+                        mode = 1;
                         flag = true;
                     } else if (GeoCollectManager.getCollector().isMidPointFocused(point.X(), point.Y())) {
                         GeoCollectManager.getCollector().refresh();
@@ -240,14 +256,21 @@ public class DrawingTool extends BaseTool {
                         mIsDraw = false;
                         mCanDrag = true;
                         mIsMidFocused = true;
+                        mode = 1;
                         flag = true;
                     } else {
                         mIsDraw = true;
                         mCanDrag = false;
-                    }
+                    }*/
                     break;
                 case MotionEvent.ACTION_MOVE:
-                    if (mCanDrag) {
+                    Log.e(TAG, String.format("action_move screen point[x=%s,y=%s]", event.getX(), event.getY()));
+                    if (mIsFirstLine) {
+                        drawLine(event);
+                        flag = true;
+                    }
+
+                    /*if (mCanDrag) {
                         switch (CollectInteroperator.getGeometryType()) {
                             case Point:
                                 pointDrag(event);
@@ -269,37 +292,24 @@ public class DrawingTool extends BaseTool {
                         if (Math.sqrt(xx * xx + yy * yy) > 10) {
                             mIsDraw = false;
                         }
-                    }
+                    }*/
                     break;
                 case MotionEvent.ACTION_UP:
-//                    if (((MapControl) getBuddyControl()).MODE == ZoomPan.MAGNIFY) {
-//                        mIsDraw = true;
-//                        mIsMaginify = true;
-//                    }
-                    if (mIsDraw) {
-                        //娣诲姞涓�涓喘鏂扮殑鐐�
-
+                    Log.e(TAG, String.format("action_up screen point[x=%s,y=%s]", event.getX(), event.getY()));
+                    if (mIsFirstLine) {
                         addPoint(new PointF(event.getX(), event.getY()));
-                        setValues();
-
-//					// 瑙﹀彂鐩戝惉浜嬩欢
-//					PointListener p = new PointListener();
-//					p.setOnPointListener(new PointListener.OnPointListener() {
-//						@Override
-//						public void pointListening() {
-//							System.out.println("鐩戝惉areaValue---"+areaValue);
-//							areaValue = GeoCollectManager.getCollector().getArea();
-//                            lengthValue = GeoCollectManager.getCollector().getLength();
-//                            positionValue = GeoCollectManager.getCollector().getPosition();
-//						}
-//					});
-
+                        mIsFirstLine = false;
+                        flag = true;
+                    }
+                    /*if (mIsDraw) {
+                        //娣诲姞涓�涓喘鏂扮殑鐐�
+                        addPoint(new PointF(event.getX(), event.getY()));
+                        //setValues();
                         GeoCollectManager.getCollector().refresh();
                         flag = true;
                         if (mIsMaginify) {
                             flag = false;
                         }
-
                     }
 
                     if (mCanDrag) {
@@ -307,19 +317,7 @@ public class DrawingTool extends BaseTool {
                             // Change focused points' x & y
                             //淇敼涓�涓幇鏈夌殑鐐�
                             updatePoint(new PointF(event.getX(), event.getY()));
-                            setValues();
-
-//                            // 瑙﹀彂鐩戝惉浜嬩欢
-//                            PointListener p = new PointListener();
-//                            p.setOnPointListener(new PointListener.OnPointListener() {
-//                                @Override
-//                                public void pointListening() {
-//                                    areaValue = GeoCollectManager.getCollector().getArea();
-//                                    lengthValue = GeoCollectManager.getCollector().getLength();
-//                                    positionValue = GeoCollectManager.getCollector().getPosition();
-//                                }
-//                            });
-
+                            //setValues();
                             GeoCollectManager.getCollector().refresh();
                             mCanDrag = false;
                             mIsDrag = false;
@@ -328,7 +326,7 @@ public class DrawingTool extends BaseTool {
                             mCanDrag = false;
                             flag = true;
                         }
-                    }
+                    }*/
                     break;
             }
         } catch (IOException e) {
@@ -380,10 +378,20 @@ public class DrawingTool extends BaseTool {
         mBitmapCurrentBack = mBitExMap.copy(Config.RGB_565, true);
         Canvas canvas = new Canvas(mBitmapCurrentBack);
         // draw point
-        GeoCollectManager.getCollector().drawPointsOnCanvas(canvas,
-                event.getX(), event.getY());
-        BitmapDrawable bg = new BitmapDrawable(getBuddyControl().getContext()
-                .getResources(), mBitmapCurrentBack);
+        GeoCollectManager.getCollector().drawPointsOnCanvas(canvas, event.getX(), event.getY());
+        BitmapDrawable bg = new BitmapDrawable(getBuddyControl().getContext().getResources(), mBitmapCurrentBack);
+        getBuddyControl().setBackgroundDrawable(bg);
+    }
+
+    private void drawLine(MotionEvent event) throws Exception {
+        // Prepare
+        mBitExMap = mMapCurrent.ExportMap(false);
+        mBitmapCurrentBack = mBitExMap.copy(Config.RGB_565, true);
+        Canvas canvas = new Canvas(mBitmapCurrentBack);
+
+        // Collecting Line
+        GeoCollectManager.getCollector().drawLineOnCanvas(canvas, event.getX(), event.getY());
+        BitmapDrawable bg = new BitmapDrawable(getBuddyControl().getContext().getResources(), mBitmapCurrentBack);
         getBuddyControl().setBackgroundDrawable(bg);
     }
 
@@ -400,13 +408,10 @@ public class DrawingTool extends BaseTool {
             mIsMidFocused = false;
         }
         // Path
-        GeoCollectManager.getCollector().drawPathOnCanvas(canvas, event.getX(),
-                event.getY());
+        GeoCollectManager.getCollector().drawPathOnCanvas(canvas, event.getX(), event.getY());
         // Points
-        GeoCollectManager.getCollector().drawPointsOnCanvas(canvas,
-                event.getX(), event.getY());
-        BitmapDrawable bg = new BitmapDrawable(getBuddyControl().getContext()
-                .getResources(), mBitmapCurrentBack);
+        GeoCollectManager.getCollector().drawPointsOnCanvas(canvas, event.getX(), event.getY());
+        BitmapDrawable bg = new BitmapDrawable(getBuddyControl().getContext().getResources(), mBitmapCurrentBack);
         getBuddyControl().setBackgroundDrawable(bg);
     }
 
@@ -423,13 +428,10 @@ public class DrawingTool extends BaseTool {
             mIsMidFocused = false;
         }
         // Path
-        GeoCollectManager.getCollector().drawPathOnCanvas(canvas, event.getX(),
-                event.getY());
+        GeoCollectManager.getCollector().drawPathOnCanvas(canvas, event.getX(), event.getY());
         // Points
-        GeoCollectManager.getCollector().drawPointsOnCanvas(canvas,
-                event.getX(), event.getY());
-        BitmapDrawable bg = new BitmapDrawable(getBuddyControl().getContext()
-                .getResources(), mBitmapCurrentBack);
+        GeoCollectManager.getCollector().drawPointsOnCanvas(canvas, event.getX(), event.getY());
+        BitmapDrawable bg = new BitmapDrawable(getBuddyControl().getContext().getResources(), mBitmapCurrentBack);
         getBuddyControl().setBackgroundDrawable(bg);
     }
 

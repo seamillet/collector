@@ -192,6 +192,10 @@ public abstract class GeoCollector {
 		return;
 	}
 
+	public void drawLineOnCanvas(Canvas canvas, float x, float y) {
+		return;
+	}
+
 	/**
 	 * 判断点击位置是否存在点
 	 * 
@@ -212,6 +216,10 @@ public abstract class GeoCollector {
 	 */
 	public void addPointMid(IPoint point) {
 		return;
+	}
+
+	public int getPointsSize() {
+		return mPoints.size();
 	}
 
 	protected void geometryToPoints(IGeometry geo) {

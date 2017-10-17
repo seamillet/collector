@@ -293,7 +293,7 @@ public class PolyLineCollector extends GeoCollector {
 		// 闁插洭娉﹂悙锟�
 		for (int i = 0; i < mPoints.size(); i++) {
 			if (i == currentPointIndex) {
-				canvas.drawCircle(x, y, 7, DrawPaintStyles.PointFocusedPaint);
+				canvas.drawCircle(x, y, 7, DrawPaintStyles.pointFocusedPaint);
 			} else {
 				PointF pf = mMap.FromMapPoint(mPoints.get(i));
 				canvas.drawCircle(pf.x, pf.y, 7,

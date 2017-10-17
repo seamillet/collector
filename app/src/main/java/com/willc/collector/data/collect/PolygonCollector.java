@@ -334,6 +334,29 @@ public class PolygonCollector extends GeoCollector {
 	}
 
 	@Override
+	public void drawLineOnCanvas(Canvas canvas, float x, float y) {
+		Path path = new Path();
+
+		PointF startPt = mMap.FromMapPoint(mPoints.get(currentPointIndex));
+		float hDistance = Math.abs(startPt.x - x);
+		float vDistance = Math.abs(startPt.y - y);
+		if (hDistance > vDistance) {
+			path.moveTo(startPt.x, startPt.y);
+			path.lineTo(x, startPt.y);
+			canvas.drawPath(path,DrawPaintStyles.lineCollectingPaint);
+			canvas.drawTextOnPath(String.valueOf(hDistance), path, hDistance/2, 10.0f, DrawPaintStyles.textDistancePaint);
+			//canvas.drawLine(startPt.x, startPt.y, x, startPt.y, DrawPaintStyles.lineCollectingPaint);
+
+		} else {
+			path.moveTo(startPt.x, startPt.y);
+			path.lineTo(startPt.x, y);
+			canvas.drawPath(path,DrawPaintStyles.lineCollectingPaint);
+			canvas.drawTextOnPath(String.valueOf(vDistance), path, vDistance/2, 10.0f, DrawPaintStyles.textDistancePaint);
+			//canvas.drawLine(startPt.x, startPt.y, startPt.x, y, DrawPaintStyles.lineCollectingPaint);
+		}
+	}
+
+	@Override
 	public void drawPathOnCanvas(Canvas canvas, float x, float y) {
 		Path path = new Path();
 		if (currentPointIndex == 0) {
@@ -351,7 +374,7 @@ public class PolygonCollector extends GeoCollector {
 			}
 		}
 		path.close();
-		canvas.drawPath(path, DrawPaintStyles.polygonPaint);
+		//canvas.drawPath(path, DrawPaintStyles.polygonPaint);
 		canvas.drawPath(path, DrawPaintStyles.linePaintPaint);
 	}
 
@@ -360,23 +383,18 @@ public class PolygonCollector extends GeoCollector {
 		// 采集点
 		for (int i = 0; i < mPoints.size(); i++) {
 			if (i == currentPointIndex) {
-				canvas.drawCircle(x, y, 7, DrawPaintStyles.PointFocusedPaint);
+				canvas.drawCircle(x, y, 7, DrawPaintStyles.pointFocusedPaint);
 			} else {
 				PointF pf = mMap.FromMapPoint(mPoints.get(i));
-				canvas.drawCircle(pf.x, pf.y, 7,
-						DrawPaintStyles.pointNoFocusedPaint);
+				canvas.drawCircle(pf.x, pf.y, 7, DrawPaintStyles.pointNoFocusedPaint);
 			}
 		}
 		// 计算动态中点，并将中点绘制到Canvas
 		if (currentPointIndex == 0) {
-			PointF cMidForeword = calcMidPoint(x, y,
-					mMap.FromMapPoint(mPoints.get(currentPointIndex + 1)));
-			PointF cMidBackword = calcMidPoint(x, y,
-					mMap.FromMapPoint(mPoints.get(mPoints.size() - 1)));
-			canvas.drawCircle(cMidForeword.x, cMidForeword.y, 4,
-					DrawPaintStyles.midPointPaint);
-			canvas.drawCircle(cMidBackword.x, cMidBackword.y, 4,
-					DrawPaintStyles.midPointPaint);
+			PointF cMidForeword = calcMidPoint(x, y, mMap.FromMapPoint(mPoints.get(currentPointIndex + 1)));
+			PointF cMidBackword = calcMidPoint(x, y, mMap.FromMapPoint(mPoints.get(mPoints.size() - 1)));
+			canvas.drawCircle(cMidForeword.x, cMidForeword.y, 4, DrawPaintStyles.midPointPaint);
+			canvas.drawCircle(cMidBackword.x, cMidBackword.y, 4, DrawPaintStyles.midPointPaint);
 			for (int i = 1; i < mMidPoints.size() - 1; i++) {
 				PointF pf = mMap.FromMapPoint(mMidPoints.get(i));
 				canvas.drawCircle(pf.x, pf.y, 4, DrawPaintStyles.midPointPaint);
@@ -463,8 +481,7 @@ public class PolygonCollector extends GeoCollector {
 			switch (geo.GeometryType()) {
 			case Point:
 				element = new PointElement();
-				((IPointElement) element)
-						.setSymbol(ElementStyles.FocusedPointStyle);
+				((IPointElement) element).setSymbol(ElementStyles.POINT_LAST_STYLE);
 				break;
 			case Polyline:
 				element = new LineElement();

@@ -98,7 +98,7 @@ public class PointCollector extends GeoCollector {
 
     @Override
     public void drawPointsOnCanvas(Canvas canvas, float x, float y) {
-        canvas.drawCircle(x, y, 10, DrawPaintStyles.PointFocusedPaint);
+        canvas.drawCircle(x, y, 10, DrawPaintStyles.pointFocusedPaint);
     }
 
     @Override
