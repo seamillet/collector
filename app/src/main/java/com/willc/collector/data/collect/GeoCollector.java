@@ -37,6 +37,8 @@ import srs.tools.MapControl;
  */
 public abstract class GeoCollector {
 	protected final int range = 30;
+	protected final int rangeLastPoint = 60;
+
 	//protected MapControl mMapControl = null;
 	protected MapView mMapView = null;
 	protected IMap mMap = null;
@@ -209,6 +211,10 @@ public abstract class GeoCollector {
 		return false;
 	}
 
+	public boolean isNearLastPoint(double x, double y, int range) {
+		return false;
+	}
+
 	/**
 	 * 当中点被选中时，在点集合中增加一个采集点
 	 * 
@@ -269,11 +275,9 @@ public abstract class GeoCollector {
 		List<IElement> elements = new ArrayList<IElement>();
 		for (int i = 0; i < mPoints.size(); i++) {
 			IElement element = new PointElement();
-			((IPointElement) element)
-					.setSymbol(ElementStyles.NoFocusedPointStyle);
+			((IPointElement) element).setSymbol(ElementStyles.NoFocusedPointStyle);
 			if (i == currentPointIndex) {
-				((IPointElement) element)
-						.setSymbol(ElementStyles.FocusedPointStyle);
+				((IPointElement) element).setSymbol(ElementStyles.FocusedPointStyle);
 			}
 			element.setGeometry(mPoints.get(i));
 			elements.add(element);

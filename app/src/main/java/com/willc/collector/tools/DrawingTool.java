@@ -48,9 +48,22 @@ public class DrawingTool extends BaseTool {
     // 绉诲姩鏃剁殑鐢诲竷
     Bitmap mBitmapCurrentBack = null;
 
+    /**
+     * onTouch()中, ACTION_DOWN时的点对象
+     */
     PointF mDownPt = null;
 
+    /**
+     * 采集新建标识--还没有任何点
+     */
     boolean mIsFirstLine = false;
+
+    /**
+     * 如果ACTION_DOWN的位置在最后点的附近[32px], 则mCanDrawLine=true.
+     * 即可以画collecting line.
+     */
+    boolean mCanDrawLine = false;
+
     boolean mIsDraw = true;
     boolean mCanDrag = false;
     boolean mIsDrag = false;
@@ -224,7 +237,6 @@ public class DrawingTool extends BaseTool {
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         boolean flag = false;
-
         try {
             int mode = 0;
             switch (event.getAction()) {
@@ -239,6 +251,13 @@ public class DrawingTool extends BaseTool {
                         addPoint(mDownPt);
                         mIsFirstLine = true;
                         flag = true;
+                    } else if (sizeOfPoints >= 2) {
+                        if (GeoCollectManager.getCollector().isNearLastPoint(point.X(), point.Y(), -1)) {
+
+                            Log.e(TAG, "action_down point near last point");
+                            mCanDrawLine = true;
+                            flag = true;
+                        }
                     }
 
                     /*if (GeoCollectManager.getCollector().isPointFocused(point.X(), point.Y())) {
@@ -266,6 +285,9 @@ public class DrawingTool extends BaseTool {
                 case MotionEvent.ACTION_MOVE:
                     Log.e(TAG, String.format("action_move screen point[x=%s,y=%s]", event.getX(), event.getY()));
                     if (mIsFirstLine) {
+                        drawLine(event);
+                        flag = true;
+                    } else if (mCanDrawLine) {
                         drawLine(event);
                         flag = true;
                     }
@@ -300,7 +322,12 @@ public class DrawingTool extends BaseTool {
                         addPoint(new PointF(event.getX(), event.getY()));
                         mIsFirstLine = false;
                         flag = true;
+                    } else if (mCanDrawLine) {
+                        addPoint(new PointF(event.getX(), event.getY()));
+                        mCanDrawLine = false;
+                        flag = true;
                     }
+
                     /*if (mIsDraw) {
                         //娣诲姞涓�涓喘鏂扮殑鐐�
                         addPoint(new PointF(event.getX(), event.getY()));

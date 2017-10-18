@@ -18,6 +18,8 @@ import android.widget.Toast;
 import com.willc.collector.R;
 import com.willc.collector.datamgr.GeoCollectManager;
 import com.willc.collector.interoperation.CollectInteroperator;
+import com.willc.collector.lib.map.IMap;
+import com.willc.collector.lib.map.Map;
 import com.willc.collector.lib.view.MapView;
 import com.willc.collector.tools.DrawingTool;
 import com.willc.collector.tools.EditTools;
@@ -26,6 +28,7 @@ import com.willc.collector.tools.GPSUtil;
 import java.io.IOException;
 import java.util.EventObject;
 
+import srs.Geometry.Envelope;
 import srs.Geometry.srsGeometryType;
 
 /**
@@ -35,6 +38,8 @@ public class CollectActivity extends Activity {
     private MapView mapView = null;
     // The tool of collecting points Manually
     private DrawingTool drawingTool = null;
+
+    private IMap map = null;
     // The geometry type of the current feature collecting
     private srsGeometryType mtype = null;
 
@@ -56,11 +61,17 @@ public class CollectActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_collect);
 
-        // Init and Set MapControl
         mapView = (MapView) findViewById(R.id.map_collect);
-        mapView.setMap(CollectInteroperator.getMap());
-        mapView.Refresh();
-        GeoCollectManager.setMapControl(mapView);
+
+        try {
+            CollectInteroperator.init(this.loadMap(), srsGeometryType.Polygon);
+
+            mapView.setMap(CollectInteroperator.getMap());
+            mapView.Refresh();
+            GeoCollectManager.setMapControl(mapView);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // Set Geometry Type to GeoCollectManager
         mtype = CollectInteroperator.getGeometryType();
@@ -284,5 +295,44 @@ public class CollectActivity extends Activity {
     @SuppressLint("ShowToast")
     private void showToast(CharSequence msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT);
+    }
+
+    /**
+     * 测试用 加载测试数据
+     *
+     * @throws Exception
+     */
+    public IMap loadMap() throws Exception {
+        if (this.map == null) {
+            this.map = new Map(new Envelope(0, 0, 100D, 100D));
+
+            // 加载影像文件数据 /TestData/IMAGE/长葛10村.tif /test/辉县市/IMAGE/01.tif  /storage/emulated/0/FlightTarget/廊坊.tif
+            /*final String tifPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download/collector/长葛10村.tif";
+            Log.i(TAG, tifPath);
+
+            File tifFile = new File(tifPath);
+            if (tifFile.exists()) {
+                IRasterLayer layer = new RasterLayer(tifPath);
+                if (layer != null) {
+                    this.map.AddLayer(layer);
+                }
+            }*/
+
+            // 加载shp矢量文件数据 /TestData/Data/调查村.shp /test/辉县市/TASK/村边界.shp
+            /*final String shpPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download/collector/Data/调查村.shp";
+            Log.d(TAG, shpPath);
+
+            File shpFile = new File(shpPath);
+            if (shpFile.exists()) {
+                IFeatureLayer layer = new FeatureLayer(shpPath);
+                if (layer != null) {
+                    this.map.AddLayer(layer);
+                }
+            }
+
+            this.map.setExtent(((IFeatureLayer) map.GetLayer(0)).getFeatureClass().getGeometry(1).Extent());
+            this.map.setGeoProjectType(ProjCSType.ProjCS_WGS1984_Albers_BJ);*/
+        }
+        return this.map;
     }
 }

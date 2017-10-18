@@ -27,7 +27,7 @@ public final class DrawPaintStyles {
         lineCollectingPaint = generatePaint(Color.RED, Style.STROKE, 3, true, true);
         polygonPaint = generatePaint(Color.argb(120, 242, 240, 26), Style.STROKE, 1, true, true);
 
-        textDistancePaint = generatePaint(Color.rgb(255,140,0), Style.STROKE, 2, true, true);
+        textDistancePaint = generateTextPaint(Color.rgb(255,140,0), Style.FILL, 24.0f, Paint.Align.CENTER, true, true);  //橙色
     }
 
     private static Paint generatePaint(int color, Paint.Style style, int width, boolean isAntiAlias, boolean isDither) {
@@ -35,6 +35,17 @@ public final class DrawPaintStyles {
         paint.setColor(color);
         paint.setStyle(style);
         paint.setStrokeWidth(width);
+        paint.setAntiAlias(isAntiAlias);
+        paint.setDither(isDither);
+        return paint;
+    }
+
+    private static Paint generateTextPaint(int color, Paint.Style style, float textSize, Paint.Align textAlign, boolean isAntiAlias, boolean isDither) {
+        Paint paint = new Paint(Paint.DITHER_FLAG);
+        paint.setColor(color);
+        paint.setStyle(style);
+        paint.setTextAlign(textAlign);
+        paint.setTextSize(textSize);
         paint.setAntiAlias(isAntiAlias);
         paint.setDither(isDither);
         return paint;
