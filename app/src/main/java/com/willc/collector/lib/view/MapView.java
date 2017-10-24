@@ -187,6 +187,7 @@ public class MapView extends BaseControl implements ContentChangedListener {
         }*/
         super.onDraw(canvas);
         Log.i(TAG, "MapView.onDraw(). 重画屏幕");
+        Log.i(TAG, "MapView current scale is " + mActiveView.FocusMap().getScale());
         /*try {
             if(this.mZoomPan != null && ((ZoomPan)this.mZoomPan).isMAGNIFY()) {
                 super.onDraw(canvas);
@@ -213,6 +214,11 @@ public class MapView extends BaseControl implements ContentChangedListener {
     }
 
     public boolean onTouch(View v, MotionEvent event) {
+        IEnvelope deviceExtent = mActiveView.FocusMap().getDeviceExtent();
+        IEnvelope extent = mActiveView.FocusMap().getExtent();
+
+        Log.i(TAG, String.format("MapView.onTouch() --> device extent=[xmin=%s,ymin=%s,xmax=%s,ymax=%s]", deviceExtent.XMin(), deviceExtent.YMin(), deviceExtent.XMax(), deviceExtent.YMax()));
+        Log.i(TAG, String.format("MapView.onTouch() --> extent=[xmin=%s,ymin=%s,xmax=%s,ymax=%s]",extent.XMin(), extent.YMin(), extent.XMax(), extent.YMax()));
         if(this.mDrawTool != null && this.mDrawTool.getEnable().booleanValue()) {
             Log.i(TAG, "MapView.onTouch() --> mDrawTool.onTouch()");
             boolean end = this.mDrawTool.onTouch(v, event);
