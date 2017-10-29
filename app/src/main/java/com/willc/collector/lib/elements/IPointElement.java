@@ -1,8 +1,12 @@
 package com.willc.collector.lib.elements;
 
+import srs.Display.Symbol.IPointSymbol;
+
 /**
  * Created by stg on 17/10/29.
  */
+public interface IPointElement extends IElement {
+    IPointSymbol getSymbol();
 
-public interface IPointElement {
+    void setSymbol(IPointSymbol symbol);
 }

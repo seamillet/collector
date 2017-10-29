@@ -1,4 +1,4 @@
-package com.willc.collector.lib.elements;
+package com.willc.collector.lib.elements.container;
 
 import java.io.IOException;
 import java.util.List;
@@ -12,7 +12,6 @@ import srs.Layer.Event.ElementManager;
 /**
  * Created by stg on 17/10/28.
  */
-
 public interface IElementContainer {
     int getElementCount();
 
