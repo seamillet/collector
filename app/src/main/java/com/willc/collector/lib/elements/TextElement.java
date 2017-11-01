@@ -15,7 +15,6 @@ import srs.Display.Setting;
 import srs.Display.Symbol.ISymbol;
 import srs.Display.Symbol.ITextSymbol;
 import srs.Display.Symbol.TextSymbol;
-import srs.Element.IElement;
 import srs.Geometry.Envelope;
 import srs.Geometry.IGeometry;
 import srs.Geometry.IPoint;
@@ -25,7 +24,7 @@ import srs.Utility.sRSException;
 /**
  * Created by stg on 17/10/29.
  */
-public class TextElement extends Element implements ITextElement, IElement {
+public class TextElement extends Element implements ITextElement {
     private ITextSymbol mSymbol = new TextSymbol();
     private boolean mScaleText = true;
     private String mText = "文字";
@@ -88,7 +87,7 @@ public class TextElement extends Element implements ITextElement, IElement {
 
     }
 
-    public void Draw(Bitmap canvas, FromMapPointDelegate Delegate) {
+    public void draw(Bitmap canvas, FromMapPointDelegate Delegate) {
         try {
             if(this.getGeometry() == null) {
                 throw new sRSException("1020");
@@ -171,7 +170,7 @@ public class TextElement extends Element implements ITextElement, IElement {
 
     }
 
-    public IElement Clone() {
+    public IElement clone() {
         TextElement textElement = new TextElement();
         textElement.setName(this.getName());
         textElement.setScaleText(this.mScaleText);

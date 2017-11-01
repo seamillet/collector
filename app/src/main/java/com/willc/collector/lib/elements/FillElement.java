@@ -12,7 +12,6 @@ import srs.Display.Symbol.IFillSymbol;
 import srs.Display.Symbol.ISymbol;
 import srs.Display.Symbol.SimpleFillSymbol;
 import srs.Display.Symbol.TextSymbol;
-import srs.Element.IElement;
 import srs.Geometry.IEnvelope;
 import srs.Geometry.IPoint;
 import srs.Geometry.IPolygon;
@@ -21,7 +20,7 @@ import srs.Utility.sRSException;
 /**
  * Created by stg on 17/10/29.
  */
-public class FillElement extends Element implements IFillElement, IElement {
+public class FillElement extends Element implements IFillElement {
     private IFillSymbol _Symbol;
     private boolean mIsDraw = false;
 
@@ -45,7 +44,7 @@ public class FillElement extends Element implements IFillElement, IElement {
 
     }
 
-    public void Draw(Bitmap canvas, FromMapPointDelegate Delegate) {
+    public void draw(Bitmap canvas, FromMapPointDelegate delegate) {
         try {
             if(this.getGeometry() == null) {
                 throw new sRSException("1020");
@@ -59,24 +58,26 @@ public class FillElement extends Element implements IFillElement, IElement {
                 throw new sRSException("1022");
             }
 
-            Drawing e = new Drawing(new Canvas(canvas), Delegate);
+            //Drawing e = new Drawing(new Canvas(canvas), Delegate);
             if(this.getGeometry() instanceof IEnvelope) {
-                e.DrawRectangle((IEnvelope)this.getGeometry(), this._Symbol);
+                Drawing.drawRectangle(new Canvas(canvas), (IEnvelope) this.getGeometry(), this.getSymbol(),delegate);
+                //e.DrawRectangle((IEnvelope)this.getGeometry(), this._Symbol);
             } else {
                 double areaValue = ((IPolygon)this.getGeometry()).Area();
                 IPoint iPoint = this.getGeometry().CenterPoint();
                 if(this.mIsDraw) {
                     BigDecimal bd = (new BigDecimal(areaValue / 666.666D)).setScale(4, 4);
-                    e.DrawText(bd + "(亩)", iPoint, new TextSymbol(), 2.0F);
+                    //e.DrawText(bd + "(亩)", iPoint, new TextSymbol(), 2.0F);
                 }
-                e.DrawPolygon((IPolygon)this.getGeometry(), this._Symbol);
+                //e.DrawPolygon((IPolygon)this.getGeometry(), this._Symbol);
+                Drawing.drawPolygon(new Canvas(canvas), (IPolygon) this.getGeometry(), this.getSymbol(),delegate);
             }
         } catch (sRSException var8) {
             var8.printStackTrace();
         }
     }
 
-    public IElement Clone() {
+    public IElement clone() {
         FillElement element = new FillElement();
         element.setName(this.getName());
         if(this.getGeometry() != null) {

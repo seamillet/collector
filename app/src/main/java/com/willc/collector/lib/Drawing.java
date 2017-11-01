@@ -58,7 +58,7 @@ public class Drawing {
         return this.mCanvas;
     }
 
-
+    //Point
     public static void drawPoint(Canvas canvas, IPoint point, IPointSymbol symbol, FromMapPointDelegate delegate) {
         drawPoint(canvas, delegate.FromMapPoint(point), symbol);
     }
@@ -71,8 +71,6 @@ public class Drawing {
             defaultPaint.setColor(symbol.getColor());
             defaultPaint.setStyle(Paint.Style.FILL);
 
-            Path path = null;
-            float offset = 0.0f;
             switch (((ISimplePointSymbol) symbol).getStyle()) {
                 case Circle:
                     drawPointCircle(canvas, pointF, symbol, defaultPaint);
@@ -198,39 +196,84 @@ public class Drawing {
     }
 
 
-    public final void DrawPolyline(IPolyline polyline, ILineSymbol symbol) throws sRSException {
-        for(int i = 0; i < polyline.PartCount(); ++i) {
+    //Line
+    public static void drawPolyline(Canvas canvas, IPolyline polyline, ILineSymbol symbol, FromMapPointDelegate delegate) {
+        for(int i = 0; i < polyline.PartCount(); i++) {
             IPart part = polyline.Parts()[i];
-            IPoint[] ipoints = part.Points();
-            int length = ipoints.length;
-            if(length == 1) {
-                break;
+            IPoint[] iPoints = part.Points();
+
+            if(iPoints.length > 1) {
+                PointF[] points = new PointF[iPoints.length];
+                for(int j = 0; j < iPoints.length - 1; j++) {
+                    points[j] = delegate.FromMapPoint(iPoints[j]);
+                }
+
+                drawPolyline(canvas, points, symbol);
             }
-
-            float[] xyArray = new float[(length - 1) * 4];
-            PointF pStart = this.mFromMapPointDelegate.FromMapPoint(ipoints[0]);
-            xyArray[0] = pStart.x;
-            xyArray[1] = pStart.y;
-
-            for(int j = 1; j < length - 1; ++j) {
-                PointF p_Current = this.mFromMapPointDelegate.FromMapPoint(ipoints[j]);
-                xyArray[4 * j - 2] = p_Current.x;
-                xyArray[4 * j - 1] = p_Current.y;
-                xyArray[4 * j] = p_Current.x;
-                xyArray[4 * j + 1] = p_Current.y;
-            }
-
-            PointF pEnd = this.mFromMapPointDelegate.FromMapPoint(ipoints[length - 1]);
-            xyArray[4 * (length - 1) - 2] = pEnd.x;
-            xyArray[4 * (length - 1) - 1] = pEnd.y;
-            this.DrawPolyline(xyArray, symbol);
-            Object var12 = null;
         }
-
     }
 
-    public final void DrawPolygon(IPolygon polygon, IFillSymbol symbol) {
-        if(polygon != null && polygon.PartCount() != 0) {
+    public static void drawPolyline(Canvas canvas, PointF[] pts, ILineSymbol symbol) {
+        if(symbol instanceof ISimpleLineSymbol) {
+            defaultPaint.reset();
+            defaultPaint.setAntiAlias(true);
+            defaultPaint.setAlpha(symbol.getTransparent());
+            defaultPaint.setColor(symbol.getColor());
+            defaultPaint.setStyle(Paint.Style.FILL);
+            defaultPaint.setStrokeWidth(((ISimpleLineSymbol)symbol).getWidth());
+
+            DashPathEffect effects = null;
+            switch(((ISimpleLineSymbol)symbol).getStyle()) {
+                case Solid:
+                    break;
+                case Dash:
+                    effects = new DashPathEffect(new float[]{10.0F, 3.0F}, 0.0F);
+                    break;
+                case DashDot:
+                    effects = new DashPathEffect(new float[]{10.0F, 3.0F, 2.0F, 3.0F}, 13.0F);
+                    break;
+                case DashDotDot:
+                    effects = new DashPathEffect(new float[]{10.0F, 3.0F, 2.0F, 3.0F, 2.0F, 3.0F}, 13.0F);
+                    break;
+                case Dot:
+                    effects = new DashPathEffect(new float[]{2.0F, 3.0F}, 0.0F);
+                    break;
+                default:
+                    break;
+            }
+
+            if(effects != null) {
+                defaultPaint.setPathEffect(effects);
+            }
+
+            Path path = new Path();
+            path.moveTo(pts[0].x, pts[0].y);
+            for (int i = 1; i < pts.length; i++) {
+                path.lineTo(pts[i].x, pts[i].y);
+            }
+
+            canvas.drawPath(path, defaultPaint);
+            path = null;
+            effects = null;
+        }
+    }
+
+    public static void drawLine(Canvas canvas, IPoint startPoint, IPoint endPoint, ILineSymbol symbol, FromMapPointDelegate delegate) {
+        PointF[] points = new PointF[2];
+        points[0] = delegate.FromMapPoint(startPoint);
+        points[1] = delegate.FromMapPoint(endPoint);
+
+        drawPolyline(canvas, points, symbol);
+    }
+
+    public static void drawLine(Canvas canvas, PointF startPoint, PointF endPoint, ILineSymbol symbol) throws sRSException {
+        drawPolyline(canvas, new PointF[]{startPoint, endPoint}, symbol);
+    }
+
+
+    //Polygon
+    public static void drawPolygon(Canvas canvas, IPolygon polygon, IFillSymbol symbol, FromMapPointDelegate delegate) {
+        if (polygon != null && polygon.PartCount() != 0) {
             Path gp = new Path();
             Integer[] indexes = polygon.ExteriorRingIndex();
 
@@ -241,37 +284,37 @@ public class Drawing {
             PointF pC;
             int j;
             int k;
-            for(index = 0; index < indexes.length - 1; ++index) {
+            for (index = 0; index < indexes.length - 1; ++index) {
                 part = polygon.Parts()[indexes[index].intValue()];
                 ipoints = part.Points();
                 pF = new Path();
-                pC = this.mFromMapPointDelegate.FromMapPoint(ipoints[0]);
+                pC = delegate.FromMapPoint(ipoints[0]);
                 pF.moveTo(pC.x, pC.y);
 
-                for(j = 1; j < ipoints.length; ++j) {
-                    pC = this.mFromMapPointDelegate.FromMapPoint(ipoints[j]);
+                for (j = 1; j < ipoints.length; ++j) {
+                    pC = delegate.FromMapPoint(ipoints[j]);
                     pF.lineTo(pC.x, pC.y);
                 }
 
                 pF.close();
-                if(ipoints.length >= 3) {
+                if (ipoints.length >= 3) {
                     gp.addPath(pF);
                 }
 
-                for(j = indexes[index].intValue() + 1; j < indexes[index + 1].intValue() - 1; ++j) {
+                for (j = indexes[index].intValue() + 1; j < indexes[index + 1].intValue() - 1; ++j) {
                     part = polygon.Parts()[j];
                     ipoints = part.Points();
                     pF = new Path();
-                    pC = this.mFromMapPointDelegate.FromMapPoint(ipoints[ipoints.length - 1]);
+                    pC = delegate.FromMapPoint(ipoints[ipoints.length - 1]);
                     pF.moveTo(pC.x, pC.y);
 
-                    for(k = ipoints.length - 2; k >= 0; --k) {
-                        pC = this.mFromMapPointDelegate.FromMapPoint(ipoints[k]);
+                    for (k = ipoints.length - 2; k >= 0; --k) {
+                        pC = delegate.FromMapPoint(ipoints[k]);
                         pF.lineTo(pC.x, pC.y);
                     }
 
                     pF.close();
-                    if(ipoints.length >= 3) {
+                    if (ipoints.length >= 3) {
                         gp.addPath(pF);
                     }
                 }
@@ -283,105 +326,47 @@ public class Drawing {
             part = polygon.Parts()[index];
             ipoints = part.Points();
             pF = new Path();
-            pC = this.mFromMapPointDelegate.FromMapPoint(ipoints[0]);
+            pC = delegate.FromMapPoint(ipoints[0]);
             pF.moveTo(pC.x, pC.y);
 
-            for(j = 1; j < ipoints.length; ++j) {
-                pC = this.mFromMapPointDelegate.FromMapPoint(ipoints[j]);
+            for (j = 1; j < ipoints.length; ++j) {
+                pC = delegate.FromMapPoint(ipoints[j]);
                 pF.lineTo(pC.x, pC.y);
             }
 
             pF.close();
-            if(ipoints.length >= 3) {
+            if (ipoints.length >= 3) {
                 gp.addPath(pF);
             }
 
-            for(j = index + 1; j < polygon.PartCount(); ++j) {
+            for (j = index + 1; j < polygon.PartCount(); ++j) {
                 part = polygon.Parts()[j];
                 ipoints = part.Points();
                 pF = new Path();
-                pC = this.mFromMapPointDelegate.FromMapPoint(ipoints[0]);
+                pC = delegate.FromMapPoint(ipoints[0]);
                 pF.moveTo(pC.x, pC.y);
 
-                for(k = 1; k < ipoints.length; ++k) {
-                    pC = this.mFromMapPointDelegate.FromMapPoint(ipoints[k]);
+                for (k = 1; k < ipoints.length; ++k) {
+                    pC = delegate.FromMapPoint(ipoints[k]);
                     pF.lineTo(pC.x, pC.y);
                 }
 
                 pF.close();
-                if(ipoints.length >= 3) {
+                if (ipoints.length >= 3) {
                     gp.addPath(pF);
                 }
             }
 
-            this.DrawPolygon(gp, symbol);
+            drawPolygon(canvas, gp, symbol);
             gp = null;
         }
     }
 
-    public final void DrawRectangle(IEnvelope rectangle, IFillSymbol symbol) {
-        this.DrawPolygon(rectangle.ConvertToPolygon(), symbol);
+    public static void drawRectangle(Canvas canvas, IEnvelope rectangle, IFillSymbol symbol, FromMapPointDelegate delegate) {
+        drawPolygon(canvas, rectangle.ConvertToPolygon(), symbol,delegate);
     }
 
-    public final void DrawText(String text, IPoint point, ITextSymbol symbol, float rate) {
-        this.DrawText(text, this.mFromMapPointDelegate.FromMapPoint(point), symbol, rate);
-    }
-
-    public final void DrawImage(Bitmap image, IEnvelope extent) {
-        PointF TL = this.mFromMapPointDelegate.FromMapPoint(new Point(extent.XMin(), extent.YMax()));
-        PointF BR = this.mFromMapPointDelegate.FromMapPoint(new Point(extent.XMax(), extent.YMin()));
-        RectF rectangle = new RectF(TL.x, TL.y, BR.x - TL.x, BR.y - TL.y);
-        this.DrawImage(image, rectangle);
-    }
-
-    public final void DrawHighlightText(String text, PointF pointF, ITextSymbol symbol) {
-        Paint paint = new Paint();
-        paint.setColor(symbol.getColor());
-        paint.setTypeface(symbol.getFont());
-        this.mCanvas.drawText(text, pointF.x, pointF.y, paint);
-    }
-
-    public final void DrawPolyline(float[] pts, ILineSymbol symbol) throws sRSException {
-        if(symbol instanceof ISimpleLineSymbol) {
-            Paint paint = new Paint();
-            paint.setColor(symbol.getColor());
-            paint.setStrokeWidth(((ISimpleLineSymbol)symbol).getWidth());
-            paint.setStyle(Paint.Style.STROKE);
-            DashPathEffect effects = null;
-            switch($SWITCH_TABLE$srs$Display$Symbol$SimpleLineStyle()[((ISimpleLineSymbol)symbol).getStyle().ordinal()]) {
-                case 1:
-                default:
-                    break;
-                case 2:
-                    effects = new DashPathEffect(new float[]{10.0F, 3.0F}, 0.0F);
-                    break;
-                case 3:
-                    effects = new DashPathEffect(new float[]{10.0F, 3.0F, 2.0F, 3.0F}, 13.0F);
-                    break;
-                case 4:
-                    effects = new DashPathEffect(new float[]{10.0F, 3.0F, 2.0F, 3.0F, 2.0F, 3.0F}, 13.0F);
-                    break;
-                case 5:
-                    effects = new DashPathEffect(new float[]{2.0F, 3.0F}, 0.0F);
-            }
-
-            if(effects != null) {
-                paint.setPathEffect(effects);
-            }
-
-            this.mCanvas.drawLines(pts, paint);
-            paint = null;
-            effects = null;
-        } else {
-            throw new sRSException("1040");
-        }
-    }
-
-    public final void DrawLine(PointF startPoint, PointF endPoint, ILineSymbol symbol) throws sRSException {
-        this.DrawPolyline(new float[]{startPoint.x, startPoint.y, endPoint.x, endPoint.y}, symbol);
-    }
-
-    public final void DrawPolygon(PointF[] points, IFillSymbol symbol) {
+    public static void drawPolygon(Canvas canvas, PointF[] points, IFillSymbol symbol) {
         Path gp = new Path();
         Path p2D = new Path();
         PointF pC = points[0];
@@ -404,26 +389,96 @@ public class Drawing {
             var12.AddPoint(p);
         }
 
-        this.DrawPolygon(gp, symbol);
+        drawPolygon(canvas, gp, symbol);
         gp = null;
     }
 
-    public final void DrawRectangle(PointF TLPoint, PointF BRPoint, IFillSymbol symbol) {
-        Path gp = new Path();
-        gp.moveTo(TLPoint.x, TLPoint.y);
-        gp.lineTo(TLPoint.x, BRPoint.y);
-        gp.lineTo(BRPoint.x, BRPoint.y);
-        gp.lineTo(BRPoint.x, TLPoint.y);
-        gp.lineTo(TLPoint.x, TLPoint.y);
-        gp.close();
-        this.DrawPolygon(gp, symbol);
+    public static void drawRectangle(Canvas canvas, PointF TLPoint, PointF BRPoint, IFillSymbol symbol) {
+        Path path = new Path();
+        path.moveTo(TLPoint.x, TLPoint.y);
+        path.lineTo(TLPoint.x, BRPoint.y);
+        path.lineTo(BRPoint.x, BRPoint.y);
+        path.lineTo(BRPoint.x, TLPoint.y);
+        path.lineTo(TLPoint.x, TLPoint.y);
+        path.close();
+        drawPolygon(canvas, path, symbol);
     }
 
-    public final void DrawAngle(IPoint iPoint, double angle, ILineSymbol symbol) {
-        Paint p = new Paint();
-        p.setColor(-65536);
-        RectF oval = new RectF(100.0F, 100.0F, 100.0F, 100.0F);
-        this.mCanvas.drawArc(oval, 90.0F, 90.0F, false, p);
+    private static void drawPolygon(Canvas canvas, Path path, IFillSymbol symbol) {
+
+        if(symbol instanceof ISimpleFillSymbol) {
+
+            Paint paintOutLine = null;
+            DashPathEffect effects = null;
+
+            if(symbol.getOutLineSymbol() != null) {
+                paintOutLine = new Paint();
+                paintOutLine.setAntiAlias(true);
+                paintOutLine.setAlpha(symbol.getOutLineSymbol().getTransparent());
+                paintOutLine.setColor(symbol.getOutLineSymbol().getColor());
+                paintOutLine.setStyle(Paint.Style.STROKE);
+                paintOutLine.setStrokeWidth(symbol.getOutLineSymbol().getWidth());
+
+                switch(((ISimpleLineSymbol)symbol.getOutLineSymbol()).getStyle()) {
+                    case Solid:
+                        break;
+                    case Dash:
+                        effects = new DashPathEffect(new float[]{10.0F, 3.0F}, 0.0F);
+                        break;
+                    case DashDot:
+                        effects = new DashPathEffect(new float[]{10.0F, 3.0F, 2.0F, 3.0F}, 13.0F);
+                        break;
+                    case DashDotDot:
+                        effects = new DashPathEffect(new float[]{10.0F, 3.0F, 2.0F, 3.0F, 2.0F, 3.0F}, 13.0F);
+                        break;
+                    case Dot:
+                        effects = new DashPathEffect(new float[]{2.0F, 3.0F}, 0.0F);
+                        break;
+                    default:
+                        break;
+                }
+
+                if(effects != null) {
+                    paintOutLine.setPathEffect(effects);
+                }
+            }
+
+
+            switch(((ISimpleFillSymbol) symbol).getStyle()) {
+                case Soild:
+                    defaultPaint.reset();
+                    defaultPaint.setAntiAlias(true);
+                    defaultPaint.setColor(((ISimpleFillSymbol)symbol).getColor());
+                    defaultPaint.setStyle(Paint.Style.FILL);
+                    canvas.drawPath(path, defaultPaint);
+                    if(paintOutLine != null) {
+                        canvas.drawPath(path, paintOutLine);
+                    }
+                    break;
+                case Hollow:
+                    if(paintOutLine != null) {
+                        canvas.drawPath(path, paintOutLine);
+                    }
+                    break;
+                default:
+                    defaultPaint.reset();
+                    defaultPaint.setAntiAlias(true);
+                    defaultPaint.setColor(((ISimpleFillSymbol)(symbol instanceof ISimpleFillSymbol?symbol:null)).getForeColor());
+                    canvas.drawPaint(defaultPaint);
+                    if(paintOutLine != null) {
+                        canvas.drawPath(path, paintOutLine);
+                    }
+            }
+
+            paintOutLine = null;
+            effects = null;
+        }
+    }
+
+
+    //Text
+    public final void DrawText(String text, IPoint point, ITextSymbol symbol, float rate) {
+        this.DrawText(text, this.mFromMapPointDelegate.FromMapPoint(point), symbol, rate);
     }
 
     public final void DrawText(String text, PointF pointF, ITextSymbol symbol, float size) {
@@ -456,8 +511,20 @@ public class Drawing {
 
     }
 
-    public final void DrawColor(int color) {
-        this.mCanvas.drawColor(color);
+    public final void DrawHighlightText(String text, PointF pointF, ITextSymbol symbol) {
+        Paint paint = new Paint();
+        paint.setColor(symbol.getColor());
+        paint.setTypeface(symbol.getFont());
+        this.mCanvas.drawText(text, pointF.x, pointF.y, paint);
+    }
+
+
+    //Image
+    public final void DrawImage(Bitmap image, IEnvelope extent) {
+        PointF TL = this.mFromMapPointDelegate.FromMapPoint(new Point(extent.XMin(), extent.YMax()));
+        PointF BR = this.mFromMapPointDelegate.FromMapPoint(new Point(extent.XMax(), extent.YMin()));
+        RectF rectangle = new RectF(TL.x, TL.y, BR.x - TL.x, BR.y - TL.y);
+        this.DrawImage(image, rectangle);
     }
 
     public final void DrawImage(Bitmap image, RectF rectangle) {
@@ -468,68 +535,15 @@ public class Drawing {
         this.mCanvas.drawBitmap(image, point.x, point.y, (Paint)null);
     }
 
-    private void DrawPolygon(Path gp, IFillSymbol symbol) {
-        Paint paintOutLine = null;
-        DashPathEffect paint;
-        if(symbol.getOutLineSymbol() != null) {
-            paintOutLine = new Paint();
-            paintOutLine.setStrokeWidth(symbol.getOutLineSymbol().getWidth());
-            paintOutLine.setColor(symbol.getOutLineSymbol().getColor());
-            paintOutLine.setStyle(Paint.Style.STROKE);
-            paint = null;
-            switch($SWITCH_TABLE$srs$Display$Symbol$SimpleLineStyle()[((ISimpleLineSymbol)symbol.getOutLineSymbol()).getStyle().ordinal()]) {
-                case 1:
-                default:
-                    break;
-                case 2:
-                    paint = new DashPathEffect(new float[]{10.0F, 3.0F}, 0.0F);
-                    break;
-                case 3:
-                    paint = new DashPathEffect(new float[]{10.0F, 3.0F, 2.0F, 3.0F}, 13.0F);
-                    break;
-                case 4:
-                    paint = new DashPathEffect(new float[]{10.0F, 3.0F, 2.0F, 3.0F, 2.0F, 3.0F}, 13.0F);
-                    break;
-                case 5:
-                    paint = new DashPathEffect(new float[]{2.0F, 3.0F}, 0.0F);
-            }
+    public final void DrawColor(int color) {
+        this.mCanvas.drawColor(color);
+    }
 
-            if(paint != null) {
-                paintOutLine.setPathEffect(paint);
-            }
-        }
 
-        if(symbol instanceof ISimpleFillSymbol) {
-            Paint paint1;
-            switch($SWITCH_TABLE$srs$Display$Symbol$SimpleFillStyle()[((ISimpleFillSymbol)(symbol instanceof ISimpleFillSymbol?symbol:null)).getStyle().ordinal()]) {
-                case 1:
-                    paint1 = new Paint();
-                    paint1.setColor(((ISimpleFillSymbol)symbol).getColor());
-                    paint1.setStyle(Paint.Style.FILL);
-                    this.mCanvas.drawPath(gp, paint1);
-                    if(paintOutLine != null) {
-                        this.mCanvas.drawPath(gp, paintOutLine);
-                    }
-
-                    paint = null;
-                    break;
-                case 2:
-                    if(paintOutLine != null) {
-                        this.mCanvas.drawPath(gp, paintOutLine);
-                    }
-                    break;
-                default:
-                    paint1 = new Paint();
-                    paint1.setColor(((ISimpleFillSymbol)(symbol instanceof ISimpleFillSymbol?symbol:null)).getForeColor());
-                    this.mCanvas.drawPaint(paint1);
-                    if(paintOutLine != null) {
-                        this.mCanvas.drawPath(gp, paintOutLine);
-                    }
-
-                    paint = null;
-            }
-        }
-
-        paintOutLine = null;
+    public final void DrawAngle(IPoint iPoint, double angle, ILineSymbol symbol) {
+        Paint p = new Paint();
+        p.setColor(-65536);
+        RectF oval = new RectF(100.0F, 100.0F, 100.0F, 100.0F);
+        this.mCanvas.drawArc(oval, 90.0F, 90.0F, false, p);
     }
 }

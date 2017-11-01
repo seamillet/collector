@@ -39,7 +39,7 @@ public class LineElement extends Element implements ILineElement {
 
     }
 
-    public void Draw(Bitmap canvas, FromMapPointDelegate Delegate) {
+    public void draw(Bitmap canvas, FromMapPointDelegate delegate) {
         try {
             if(this.getGeometry() == null) {
                 throw new sRSException("1020");
@@ -56,12 +56,13 @@ public class LineElement extends Element implements ILineElement {
             var5.printStackTrace();
         }
 
-        try {
+        /*try {
             Drawing e = new Drawing(new Canvas(canvas), Delegate);
             e.DrawPolyline((IPolyline)this.getGeometry(), this.mSymbol);
         } catch (sRSException var4) {
             var4.printStackTrace();
-        }
+        }*/
+        Drawing.drawPolyline(new Canvas(canvas),(IPolyline)this.getGeometry(),this.mSymbol,delegate);
     }
 
     public BigDecimal reservedDecimal(double x) {
@@ -70,7 +71,7 @@ public class LineElement extends Element implements ILineElement {
         return bd;
     }
 
-    public IElement Clone() {
+    public IElement clone() {
         LineElement element = new LineElement();
         element.setName(this.getName());
         if(this.getGeometry() != null) {
@@ -83,15 +84,5 @@ public class LineElement extends Element implements ILineElement {
         }
 
         return element;
-    }
-
-    @Override
-    public void draw(Bitmap canvas, FromMapPointDelegate delegate) throws sRSException {
-
-    }
-
-    @Override
-    public com.willc.collector.lib.elements.IElement clone() {
-        return null;
     }
 }

@@ -56,4 +56,8 @@ public abstract class Element implements IElement {
             var8.printStackTrace();
         }
     }*/
+
+    public IElement clone() {
+        return null;
+    }
 }
