@@ -1,5 +1,9 @@
 package com.willc.collector.lib.elements.container;
 
+import com.willc.collector.lib.elements.IElement;
+import com.willc.collector.lib.elements.ILineElement;
+import com.willc.collector.lib.elements.IPointElement;
+
 import org.dom4j.Element;
 
 import java.io.IOException;
@@ -13,9 +17,6 @@ import srs.Core.XmlFunction;
 import srs.Display.FromMapPointDelegate;
 import srs.Display.IScreenDisplay;
 import srs.Display.ScreenDisplay;
-import srs.Element.IElement;
-import srs.Element.ILineElement;
-import srs.Element.IPointElement;
 import srs.Geometry.IEnvelope;
 import srs.Geometry.IGeometry;
 import srs.Geometry.IPoint;
@@ -187,11 +188,16 @@ public class ElementContainer implements IElementContainer {
     }
 
     public final void Refresh(FromMapPointDelegate Delegate) {
-        for(int i = 0; i < this.mElements.size(); ++i) {
-            ((IElement)this.mElements.get(i)).Draw(this.mScreenDisplay.getCanvas(), Delegate);
-            if(this.mSelectedElements != null && this.mSelectedElements.contains(Integer.valueOf(i))) {
-                ((IElement)this.mElements.get(i)).DrawSelected(this.mScreenDisplay.getCanvas(), Delegate);
+        try {
+            for(int i = 0; i < this.mElements.size(); ++i) {
+
+                ((IElement)this.mElements.get(i)).draw(this.mScreenDisplay.getCanvas(), Delegate);
+                /*if(this.mSelectedElements != null && this.mSelectedElements.contains(Integer.valueOf(i))) {
+                    ((IElement)this.mElements.get(i)).DrawSelected(this.mScreenDisplay.getCanvas(), Delegate);
+                }*/
             }
+        } catch (sRSException e) {
+            e.printStackTrace();
         }
     }
 
@@ -299,7 +305,7 @@ public class ElementContainer implements IElementContainer {
     }
 
     public final void LoadXMLData(Element node) throws SecurityException, IllegalArgumentException, ClassNotFoundException, sRSException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
-        if(node != null) {
+        /*if(node != null) {
             this.mElements.clear();
             this.mSelectedElements.clear();
             if(node.attribute("SelectElements") != null) {
@@ -331,11 +337,11 @@ public class ElementContainer implements IElementContainer {
                 }
             }
 
-        }
+        }*/
     }
 
     public final void SaveXMLData(Element node) {
-        if(node != null) {
+        /*if(node != null) {
             Element elementsNode = node.getDocument().addElement("Elements");
             String selectValues = "";
             if(this.mSelectedElements.size() > 0) {
@@ -357,6 +363,6 @@ public class ElementContainer implements IElementContainer {
             }
 
             node.add(elementsNode);
-        }
+        }*/
     }
 }

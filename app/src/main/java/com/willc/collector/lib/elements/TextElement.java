@@ -25,6 +25,8 @@ import srs.Utility.sRSException;
  * Created by stg on 17/10/29.
  */
 public class TextElement extends Element implements ITextElement {
+    private static final String TAG = TextElement.class.getSimpleName();
+
     private ITextSymbol mSymbol = new TextSymbol();
     private boolean mScaleText = true;
     private String mText = "文字";
@@ -39,13 +41,11 @@ public class TextElement extends Element implements ITextElement {
     public final void setSymbol(ITextSymbol value) {
         if(this.mSymbol != value) {
             this.mSymbol = value;
-            if(this.getGeometry() != null) {
+            /*if(this.getGeometry() != null) {
                 this.setGeometry(this.getGeometry().Extent().LowerLeft());
             }
-
-            this.setGeometry((IGeometry)null);
+            this.setGeometry((IGeometry)null);*/
         }
-
     }
 
     public final boolean getScaleText() {
@@ -63,13 +63,11 @@ public class TextElement extends Element implements ITextElement {
     public final void setText(String value) {
         if(!this.mText.equals(value)) {
             this.mText = value;
-            if(this.getGeometry() != null) {
+            /*if(this.getGeometry() != null) {
                 this.setGeometry(this.getGeometry().Extent().LowerLeft());
             }
-
-            this.setGeometry((IGeometry)null);
+            this.setGeometry((IGeometry)null);*/
         }
-
     }
 
     public IGeometry getGeometry() {
@@ -77,14 +75,15 @@ public class TextElement extends Element implements ITextElement {
     }
 
     public void setGeometry(IGeometry value) {
-        if(super.getGeometry() == null) {
+        super.setGeometry(value);
+
+        /*if(super.getGeometry() == null) {
             super.setGeometry(value);
             this.setGeometry((IGeometry)null);
         } else if(super.getGeometry() != value && value != null) {
             this.SetTextSize(super.getGeometry(), value);
             super.setGeometry(value);
-        }
-
+        }*/
     }
 
     public void draw(Bitmap canvas, FromMapPointDelegate Delegate) {
@@ -97,13 +96,13 @@ public class TextElement extends Element implements ITextElement {
                 throw new sRSException("1021");
             }
 
-            if(!this.mScaleText) {
-                this.setGeometry(this.getGeometry().Extent().LowerLeft());
-                this.SetGeometry(Delegate);
-            } else {
-                this.setGeometry(this.getGeometry().Extent().LowerLeft());
-                this.SetGeometry((FromMapPointDelegate)null);
-            }
+//            if(!this.mScaleText) {
+//                this.setGeometry(this.getGeometry().Extent().LowerLeft());
+//                this.SetGeometry(Delegate);
+//            } else {
+//                this.setGeometry(this.getGeometry().Extent().LowerLeft());
+//                this.SetGeometry((FromMapPointDelegate)null);
+//            }
 
             Drawing e = new Drawing(new Canvas(canvas), Delegate);
             ITextSymbol textSymbol = (ITextSymbol)((TextSymbol)this.mSymbol).Clone();
@@ -123,7 +122,6 @@ public class TextElement extends Element implements ITextElement {
         } catch (sRSException var10) {
             var10.printStackTrace();
         }
-
     }
 
     private void SetGeometry(FromMapPointDelegate Delegate) {
@@ -150,12 +148,13 @@ public class TextElement extends Element implements ITextElement {
             double Ymax = point1.Y() + (double)boundHeight;
             super.setGeometry(new Envelope(Xmin1, Ymin, Xmax, Ymax));
         }
-
     }
 
     private void SetTextSize(IGeometry oldGeo, IGeometry newGeo) {
         float oldHeight = (float)(oldGeo.Extent().YMax() - oldGeo.Extent().YMin());
         float newHeight = (float)(newGeo.Extent().YMax() - newGeo.Extent().YMin());
+        Log.i(TAG, "SetTextSize---->old_height is " + oldHeight + ", new_height is " + newHeight);
+
         if(oldHeight > 0.0F && newHeight > 0.0F && this.mSymbol != null) {
             float rate = 1.0F;
 
@@ -184,7 +183,6 @@ public class TextElement extends Element implements ITextElement {
             textElement.setGeometry(new Point(this.getGeometry().Extent().XMin(), this.getGeometry().Extent().YMin()));
             textElement.setGeometry(this.getGeometry().Clone());
         }
-
         return textElement;
     }
 }

@@ -67,7 +67,7 @@ public class Drawing {
         if (symbol instanceof ISimplePointSymbol) {
             defaultPaint.reset();
             defaultPaint.setAntiAlias(true);
-            defaultPaint.setAlpha(symbol.getTransparent());
+            //defaultPaint.setAlpha(symbol.getTransparent());
             defaultPaint.setColor(symbol.getColor());
             defaultPaint.setStyle(Paint.Style.FILL);
 
@@ -204,7 +204,7 @@ public class Drawing {
 
             if(iPoints.length > 1) {
                 PointF[] points = new PointF[iPoints.length];
-                for(int j = 0; j < iPoints.length - 1; j++) {
+                for(int j = 0; j < iPoints.length; j++) {
                     points[j] = delegate.FromMapPoint(iPoints[j]);
                 }
 
@@ -217,9 +217,9 @@ public class Drawing {
         if(symbol instanceof ISimpleLineSymbol) {
             defaultPaint.reset();
             defaultPaint.setAntiAlias(true);
-            defaultPaint.setAlpha(symbol.getTransparent());
+            //defaultPaint.setAlpha(symbol.getTransparent());
             defaultPaint.setColor(symbol.getColor());
-            defaultPaint.setStyle(Paint.Style.FILL);
+            defaultPaint.setStyle(Paint.Style.STROKE);
             defaultPaint.setStrokeWidth(((ISimpleLineSymbol)symbol).getWidth());
 
             DashPathEffect effects = null;
@@ -414,7 +414,7 @@ public class Drawing {
             if(symbol.getOutLineSymbol() != null) {
                 paintOutLine = new Paint();
                 paintOutLine.setAntiAlias(true);
-                paintOutLine.setAlpha(symbol.getOutLineSymbol().getTransparent());
+                //paintOutLine.setAlpha(symbol.getOutLineSymbol().getTransparent());
                 paintOutLine.setColor(symbol.getOutLineSymbol().getColor());
                 paintOutLine.setStyle(Paint.Style.STROKE);
                 paintOutLine.setStrokeWidth(symbol.getOutLineSymbol().getWidth());
@@ -508,7 +508,6 @@ public class Drawing {
             boundHeight = bounds.height();
             this.mCanvas.drawText(text, pointF.x - (float)(boundWidth * 3 / 4), pointF.y + (float)(boundHeight * 4 / 3), paint);
         }
-
     }
 
     public final void DrawHighlightText(String text, PointF pointF, ITextSymbol symbol) {
@@ -517,7 +516,6 @@ public class Drawing {
         paint.setTypeface(symbol.getFont());
         this.mCanvas.drawText(text, pointF.x, pointF.y, paint);
     }
-
 
     //Image
     public final void DrawImage(Bitmap image, IEnvelope extent) {
@@ -542,7 +540,7 @@ public class Drawing {
 
     public final void DrawAngle(IPoint iPoint, double angle, ILineSymbol symbol) {
         Paint p = new Paint();
-        p.setColor(-65536);
+        p.setColor(symbol.getColor());
         RectF oval = new RectF(100.0F, 100.0F, 100.0F, 100.0F);
         this.mCanvas.drawArc(oval, 90.0F, 90.0F, false, p);
     }

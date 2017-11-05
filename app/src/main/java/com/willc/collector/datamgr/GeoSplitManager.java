@@ -5,6 +5,13 @@ package com.willc.collector.datamgr;
 
 import com.willc.collector.data.split.Splitter;
 import com.willc.collector.data.split.SplitterFactory;
+import com.willc.collector.lib.elements.FillElement;
+import com.willc.collector.lib.elements.IElement;
+import com.willc.collector.lib.elements.IFillElement;
+import com.willc.collector.lib.elements.ILineElement;
+import com.willc.collector.lib.elements.IPointElement;
+import com.willc.collector.lib.elements.LineElement;
+import com.willc.collector.lib.elements.PointElement;
 import com.willc.collector.lib.map.IMap;
 import com.willc.collector.lib.view.MapView;
 import com.willc.collector.settings.ElementStyles;
@@ -14,13 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-import srs.Element.FillElement;
-import srs.Element.IElement;
-import srs.Element.IFillElement;
-import srs.Element.ILineElement;
-import srs.Element.IPointElement;
-import srs.Element.LineElement;
-import srs.Element.PointElement;
 import srs.Geometry.IGeometry;
 import srs.Geometry.IPart;
 import srs.Geometry.IPoint;

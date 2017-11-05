@@ -10,6 +10,9 @@ import android.content.DialogInterface.OnClickListener;
 import android.graphics.Canvas;
 import android.graphics.PointF;
 
+import com.willc.collector.lib.elements.IElement;
+import com.willc.collector.lib.elements.IPointElement;
+import com.willc.collector.lib.elements.PointElement;
 import com.willc.collector.lib.map.IMap;
 import com.willc.collector.lib.view.MapView;
 import com.willc.collector.settings.ElementStyles;
@@ -19,9 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-import srs.Element.IElement;
-import srs.Element.IPointElement;
-import srs.Element.PointElement;
 import srs.Geometry.IGeometry;
 import srs.Geometry.IPart;
 import srs.Geometry.IPoint;

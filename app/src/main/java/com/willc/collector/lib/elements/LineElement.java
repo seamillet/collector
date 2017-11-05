@@ -36,24 +36,19 @@ public class LineElement extends Element implements ILineElement {
         if(this.mSymbol != value) {
             this.mSymbol = value;
         }
-
     }
 
-    public void draw(Bitmap canvas, FromMapPointDelegate delegate) {
-        try {
-            if(this.getGeometry() == null) {
-                throw new sRSException("1020");
-            }
+    public void draw(Bitmap canvas, FromMapPointDelegate delegate) throws sRSException {
+        if(this.getGeometry() == null) {
+            throw new sRSException("1020");
+        }
 
-            if(this.mSymbol == null) {
-                throw new sRSException("1021");
-            }
+        if(this.mSymbol == null) {
+            throw new sRSException("1021");
+        }
 
-            if(!(this.getGeometry() instanceof IPolyline)) {
-                throw new sRSException("1022");
-            }
-        } catch (sRSException var5) {
-            var5.printStackTrace();
+        if(!(this.getGeometry() instanceof IPolyline)) {
+            throw new sRSException("1022");
         }
 
         /*try {

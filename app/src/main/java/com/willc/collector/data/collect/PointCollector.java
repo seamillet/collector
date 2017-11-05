@@ -6,12 +6,12 @@ package com.willc.collector.data.collect;
 import android.content.Context;
 import android.graphics.Canvas;
 
+import com.willc.collector.lib.elements.IPointElement;
+import com.willc.collector.lib.elements.PointElement;
 import com.willc.collector.settings.DrawPaintStyles;
 import com.willc.collector.settings.ElementStyles;
 
 import srs.CoordinateSystem.ProjCSType;
-import srs.Element.IPointElement;
-import srs.Element.PointElement;
 import srs.GPS.GPSConvert;
 import srs.Geometry.IGeometry;
 import srs.Geometry.IPoint;

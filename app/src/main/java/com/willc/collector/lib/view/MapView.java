@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
+import com.willc.collector.lib.elements.container.IElementContainer;
 import com.willc.collector.lib.map.ActiveView;
 import com.willc.collector.lib.map.IActiveView;
 import com.willc.collector.lib.map.IMap;
@@ -33,7 +34,6 @@ import java.util.List;
 import srs.Geometry.Envelope;
 import srs.Geometry.IEnvelope;
 import srs.Geometry.IPoint;
-import srs.Layer.IElementContainer;
 import srs.Layer.IGPSContainer;
 import srs.Layer.TileLayer;
 import srs.Layer.wmts.ImageDownLoader;

@@ -8,11 +8,11 @@ import android.view.MotionEvent;
 import android.widget.RelativeLayout;
 import android.view.View;
 
+import com.willc.collector.lib.elements.container.IElementContainer;
 import com.willc.collector.lib.map.IActiveView;
 import com.willc.collector.lib.tools.ITool;
 
 import srs.Geometry.IPoint;
-import srs.Layer.IElementContainer;
 import srs.Layer.IGPSContainer;
 import srs.tools.Event.DrawToolEnableManager;
 

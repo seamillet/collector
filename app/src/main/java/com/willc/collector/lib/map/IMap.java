@@ -13,13 +13,13 @@ import srs.Display.IScreenDisplay;
 import srs.Geometry.IEnvelope;
 import srs.Geometry.IPoint;
 import srs.Layer.Event.LayerActiveChangedEvent;
-import srs.Layer.IElementContainer;
 import srs.Layer.IGPSContainer;
 import srs.Layer.ILayer;
 import srs.Operation.ISelectionSet;
 import srs.Utility.sRSException;
 import srs.Utility.unitType;
 
+import com.willc.collector.lib.elements.container.IElementContainer;
 import com.willc.collector.lib.map.event.ActiveLayerChangedManager;
 import com.willc.collector.lib.map.event.LayerAddedManager;
 import com.willc.collector.lib.map.event.LayerChangedManager;

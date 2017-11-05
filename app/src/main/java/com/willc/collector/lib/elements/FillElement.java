@@ -21,55 +21,54 @@ import srs.Utility.sRSException;
  * Created by stg on 17/10/29.
  */
 public class FillElement extends Element implements IFillElement {
-    private IFillSymbol _Symbol;
+    private IFillSymbol mSymbol;
     private boolean mIsDraw = false;
 
     public FillElement() {
-        this._Symbol = new SimpleFillSymbol();
+        this.mSymbol = new SimpleFillSymbol();
     }
 
     public FillElement(boolean isDraw) {
         this.mIsDraw = isDraw;
-        this._Symbol = new SimpleFillSymbol();
+        this.mSymbol = new SimpleFillSymbol();
     }
 
     public final IFillSymbol getSymbol() {
-        return this._Symbol;
+        return this.mSymbol;
     }
 
     public final void setSymbol(IFillSymbol value) {
-        if(this._Symbol != value) {
-            this._Symbol = value;
+        if(this.mSymbol != value) {
+            this.mSymbol = value;
         }
-
     }
 
-    public void draw(Bitmap canvas, FromMapPointDelegate delegate) {
+    public void draw(Bitmap canvas, FromMapPointDelegate delegate) throws sRSException {
+        if(this.getGeometry() == null) {
+            throw new sRSException("1020");
+        }
+
+        if(this.mSymbol == null) {
+            throw new sRSException("1021");
+        }
+
+        if(!(this.getGeometry() instanceof IEnvelope) && !(this.getGeometry() instanceof IPolygon)) {
+            throw new sRSException("1022");
+        }
+
         try {
-            if(this.getGeometry() == null) {
-                throw new sRSException("1020");
-            }
-
-            if(this._Symbol == null) {
-                throw new sRSException("1021");
-            }
-
-            if(!(this.getGeometry() instanceof IEnvelope) && !(this.getGeometry() instanceof IPolygon)) {
-                throw new sRSException("1022");
-            }
-
-            //Drawing e = new Drawing(new Canvas(canvas), Delegate);
+            Drawing e = new Drawing(new Canvas(canvas), delegate);
             if(this.getGeometry() instanceof IEnvelope) {
                 Drawing.drawRectangle(new Canvas(canvas), (IEnvelope) this.getGeometry(), this.getSymbol(),delegate);
-                //e.DrawRectangle((IEnvelope)this.getGeometry(), this._Symbol);
+                //e.DrawRectangle((IEnvelope)this.getGeometry(), this.mSymbol);
             } else {
-                double areaValue = ((IPolygon)this.getGeometry()).Area();
-                IPoint iPoint = this.getGeometry().CenterPoint();
                 if(this.mIsDraw) {
+                    double areaValue = ((IPolygon)this.getGeometry()).Area();
+                    IPoint iPoint = this.getGeometry().CenterPoint();
                     BigDecimal bd = (new BigDecimal(areaValue / 666.666D)).setScale(4, 4);
-                    //e.DrawText(bd + "(亩)", iPoint, new TextSymbol(), 2.0F);
+                    e.DrawText(bd + "(亩)", iPoint, new TextSymbol(), 2.0F);
                 }
-                //e.DrawPolygon((IPolygon)this.getGeometry(), this._Symbol);
+                //e.DrawPolygon((IPolygon)this.getGeometry(), this.mSymbol);
                 Drawing.drawPolygon(new Canvas(canvas), (IPolygon) this.getGeometry(), this.getSymbol(),delegate);
             }
         } catch (sRSException var8) {
@@ -85,7 +84,7 @@ public class FillElement extends Element implements IFillElement {
         }
 
         if(element.getSymbol() instanceof IFillSymbol) {
-            ISymbol tempVar = this._Symbol.Clone();
+            ISymbol tempVar = this.mSymbol.Clone();
             element.setSymbol((IFillSymbol)(tempVar instanceof IFillSymbol?tempVar:null));
         }
 

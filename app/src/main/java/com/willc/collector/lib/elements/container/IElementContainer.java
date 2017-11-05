@@ -1,10 +1,11 @@
 package com.willc.collector.lib.elements.container;
 
+import com.willc.collector.lib.elements.IElement;
+
 import java.io.IOException;
 import java.util.List;
 
 import srs.Display.FromMapPointDelegate;
-import srs.Element.IElement;
 import srs.Geometry.IEnvelope;
 import srs.Geometry.IGeometry;
 import srs.Layer.Event.ElementManager;
